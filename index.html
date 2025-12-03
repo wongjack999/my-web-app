@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QQQ/JEPI 月供比例評估計算器 (K$)</title>
+    <style>
+        /* (CSS 樣式保持不變，確保外觀一致) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2b6cb0;
+        }
+        
+        /* 結果區域 */
+        .result-panel {
+            margin-top: 25px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .summary-table th, .summary-table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+        .summary-table th {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .status-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .status-ok {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        .status-warn {
+            background-color: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+        .action-steps, .dca-advice {
+            background-color: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .dca-advice {
+             border-left: 4px solid #f6ad55; /* 橙色邊框以區分 */
+             background-color: #fffaf0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎯 月供比例評估 (K$)</h2>
+    
+    <div class="input-group">
+        <label for="qqqVal">QQQ 當前市值 (K$)</label>
+        <input type="number" id="qqqVal" placeholder="例如: 8.50">
+    </div>
+
+    <div class="input-group">
+        <label for="jepiVal">JEPI 當前市值 (K$)</label>
+        <input type="number" id="jepiVal" placeholder="例如: 1.50">
+    </div>
+    
+    <hr style="margin: 20px 0;">
+    
+    <div class="input-group">
+        <label for="dcaAmount">📈 每月供款金額 (K$)</label>
+        <input type="number" id="dcaAmount" placeholder="例如: 0.50 (即 $500)">
+    </div>
+
+    <button onclick="calculate()">計算比例與月供建議</button>
+
+    <div id="resultPanel" class="result-panel">
+        
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>資產</th>
+                    <th>目前市值 (K$)</th>
+                    <th>目前比例</th>
+                    <th>目標</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>QQQ</td>
+                    <td id="resQQQVal" class="highlight">-</td>
+                    <td id="resQQQPct">-</td>
+                    <td>80% (容忍 75%-85%)</td>
+                </tr>
+                <tr>
+                    <td>JEPI</td>
+                    <td id="resJEPIVal" class="highlight">-</td>
+                    <td id="resJEPIPct">-</td>
+                    <td>20% (容忍 15%-25%)</td>
+                </tr>
+                <tr>
+                    <td><strong>總資產</strong></td>
+                    <td id="resTotal" class="highlight" colspan="3">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="statusBox" class="status-box"></div>
+        
+        <div id="dcaAdvice" class="dca-advice"></div>
+
+        <div id="actionSteps" class="action-steps" style="display:none;"></div>
+    </div>
+    
+    <div class="note">所有金額以 K$ (千美元) 計算。</div>
+</div>
+
+<script>
+    function calculate() {
+        // 1. 獲取輸入
+        const qqqVal = parseFloat(document.getElementById('qqqVal').value) || 0;
+        const jepiVal = parseFloat(document.getElementById('jepiVal').value) || 0;
+        const dcaAmount = parseFloat(document.getElementById('dcaAmount').value) || 0;
+        
+        const totalVal = qqqVal + jepiVal;
+
+        if (totalVal <= 0) {
+            alert("總資產必須大於 0 才能計算比例");
+            return;
+        }
+
+        // 2. 計算比例
+        const qqqPct = (qqqVal / totalVal) * 100;
+        const jepiPct = (jepiVal / totalVal) * 100;
+        
+        // 3. 更新表格顯示
+        document.getElementById('resQQQVal').innerText = `K$${qqqVal.toFixed(2)}`;
+        document.getElementById('resQQQPct').innerText = `${qqqPct.toFixed(2)}%`;
+        document.getElementById('resJEPIVal').innerText = `K$${jepiVal.toFixed(2)}`;
+        document.getElementById('resJEPIPct').innerText = `${jepiPct.toFixed(2)}%`;
+        document.getElementById('resTotal').innerText = `K$${totalVal.toFixed(2)}`;
+
+        // 4. 顯示面板
+        document.getElementById('resultPanel').style.display = "block";
+
+        // 5. 判斷邏輯 (Trigger Point: 75% - 85%)
+        const statusBox = document.getElementById('statusBox');
+        const actionSteps = document.getElementById('actionSteps');
+        const dcaAdvice = document.getElementById('dcaAdvice');
+        
+        let needsRebalance = false;
+        let message = "";
+        
+        // --- 檢查倉位狀況 ---
+        if (qqqPct > 85) {
+            needsRebalance = true;
+            message = "⚠️ QQQ 佔比過高 (>85%)，已達到觸發點。";
+            statusBox.className = "status-box status-warn";
+        } else if (qqqPct < 75) {
+            needsRebalance = true;
+            message = "⚠️ QQQ 佔比過低 (<75%)，已達到觸發點。";
+            statusBox.className = "status-box status-warn";
+        } else {
+            message = "✅ 投資組合比例健康，無需調整現有倉位。";
+            statusBox.className = "status-box status-ok";
+        }
+        
+        statusBox.innerText = message;
+
+        // --- 6. 傳統再平衡建議 (現有倉位) ---
+        if (needsRebalance) {
+            actionSteps.style.display = "block";
+            
+            const targetQQQ = totalVal * 0.80;
+            const diffQQQ = targetQQQ - qqqVal; 
+            const diffJEPI = -diffQQQ;
+            
+            const qqqAct = diffQQQ > 0 ? `<span style="color:green">買入 K$${Math.abs(diffQQQ).toFixed(2)}</span>` : `<span style="color:red">賣出 K$${Math.abs(diffQQQ).toFixed(2)}</span>`;
+            const jepiAct = diffJEPI > 0 ? `<span style="color:green">買入 K$${Math.abs(diffJEPI).toFixed(2)}</span>` : `<span style="color:red">賣出 K$${Math.abs(diffJEPI).toFixed(2)}</span>`;
+
+            actionSteps.innerHTML = `
+                <strong>🛠️ 傳統再平衡建議 (倉位調整)：</strong><br>
+                如果您決定立即調整現有倉位，需要執行以下操作：<br>
+                1. QQQ: ${qqqAct}<br>
+                2. JEPI: ${jepiAct}
+            `;
+        } else {
+            actionSteps.style.display = "none";
+        }
+
+        // --- 7. 月供分配建議 (DCA Rebalancing) ---
+        let dcaMsg = "";
+
+        if (dcaAmount > 0) {
+            if (needsRebalance) {
+                // 如果已經觸發再平衡，月供應全力投入不足的資產
+                if (qqqPct > 85) { // QQQ 過重，月供全力買 JEPI
+                    dcaMsg = `
+                        <strong>🔥 月供建議 (修正模式)：</strong><br>
+                        由於 QQQ 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
+                        <br>➡️ **JEPI**
+                        <br><small>直至整體組合比例回到 80/20 範圍為止。</small>
+                    `;
+                } else if (qqqPct < 75) { // QQQ 過輕，月供全力買 QQQ
+                     dcaMsg = `
+                        <strong>🔥 月供建議 (修正模式)：</strong><br>
+                        由於 QQQ 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
+                        <br>➡️ **QQQ**
+                        <br><small>直至整體組合比例回到 80/20 範圍為止。</small>
+                    `;
+                }
+            } else {
+                // 比例健康，月供按目標比例分配 (80/20)
+                const dcaQQQ = dcaAmount * 0.8;
+                const dcaJEPI = dcaAmount * 0.2;
+                dcaMsg = `
+                    <strong>👍 月供建議 (正常模式)：</strong><br>
+                    目前的倉位比例健康，建議月供按目標比例分配：
+                    <br>➡️ QQQ 80% (K$${dcaQQQ.toFixed(2)})
+                    <br>➡️ JEPI 20% (K$${dcaJEPI.toFixed(2)})
+                `;
+            }
+        } else {
+            dcaMsg = "請輸入「每月供款金額 (K$)」以獲取月供分配建議。";
+        }
+
+        dcaAdvice.innerHTML = dcaMsg;
+    }
+</script>
+
+</body>
+</html>
