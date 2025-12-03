@@ -3,28 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Claymorphism 3D 投資組合評估 (手機全寬版)</title>
+    <title>投資組合評估</title>
     <style>
-        /* ****** 顏色與陰影變量 (Claymorphism 精確設定) ****** */
+        /* ****** 顏色與陰影變量 (全白色 Claymorphism 精確設定) ****** */
         :root {
-            --bg-color: #F2F6FF; 
-            --main-color: #ffffff; 
-            --input-bg: #EBEFF9; 
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
+            --bg-color: #F0F0F0; /* 略微偏灰，作為主體背景 */
+            --main-color: #FFFFFF; /* 卡片和主要元素顏色 */
+            --input-bg: #EBEBEB; /* 輸入框的淺凹陷背景 */
+            --text-primary: #333333;
+            --text-secondary: #777777;
 
-            --shadow-light: 7px 7px 15px rgba(255, 255, 255, 0.9), -7px -7px 15px rgba(174, 190, 218, 0.4);
-            --shadow-dark: 5px 5px 10px rgba(174, 190, 218, 0.5), -5px -5px 10px rgba(255, 255, 255, 1);
-            --inner-shadow: inset 4px 4px 8px rgba(174, 190, 218, 0.6), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            /* 統一使用淺灰色陰影和白色高光來營造白色 Clay 效果 */
+            --shadow-light: 6px 6px 12px rgba(255, 255, 255, 1), -6px -6px 12px rgba(180, 180, 180, 0.5); /* 凸起陰影 */
+            --shadow-dark: 4px 4px 8px rgba(180, 180, 180, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.8); /* 凸起陰影 (用於按鈕) */
+            --inner-shadow: inset 3px 3px 6px rgba(180, 180, 180, 0.4), inset -3px -3px 6px rgba(255, 255, 255, 0.6); /* 凹陷陰影 */
             
-            --btn-calc-color: #FF8F4A; 
-            --btn-calc-shadow: 0 10px 20px rgba(255, 143, 74, 0.5); 
-            --active-color: #3867D6; 
+            --btn-calc-color: #FF8F4A; /* 保持突出的橙色 */
+            --btn-calc-shadow: 0 8px 16px rgba(255, 143, 74, 0.4); 
+            --active-color: #3867D6; /* 保持藍色活躍狀態 */
 
-            --success-color: #e9f8f4;
-            --warning-color: #fef4f4;
-            --info-color: #eff5ff;
-            --action-color: #fff8e8;
+            /* 狀態卡片背景顏色全部使用白色，並調整文字顏色以保持可讀性 */
+            --success-color: #FFFFFF; 
+            --warning-color: #FFFFFF; 
+            --info-color: #FFFFFF;
+            --action-color: #FFFFFF; 
+            
+            /* 狀態文字顏色保持不變 */
+            --success-text: #38a169;
+            --warning-text: #e53e3e;
+            --info-text: #3867D6;
+            --action-text: #dd6b20;
         }
 
         body {
@@ -34,8 +42,7 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            /* 讓內容頂部對齊，而不是居中 */
-            padding: 0; /* 移除 body 的上下 padding */
+            padding: 0;
             color: var(--text-primary);
         }
 
@@ -43,12 +50,12 @@
         /* ****** 主要修改部分：全寬度手機適配與取消外框 ****** */
         /* ************************************************* */
         .container {
-            background: var(--main-color);
-            padding: 30px 25px; /* 內邊距保留，確保內容不會緊貼邊緣 */
-            border-radius: 0; /* 取消外框圓角 */
-            box-shadow: none; /* 取消外框陰影 */
-            width: 100%; /* 全寬度 */
-            max-width: 100%; /* 取消最大寬度限制 */
+            background: var(--main-color); /* 主體背景設為純白 */
+            padding: 30px 25px;
+            border-radius: 0;
+            box-shadow: none; /* 容器無陰影 */
+            width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -76,16 +83,16 @@
             border: none;
             border-radius: 18px;
             font-size: 1rem;
-            background-color: var(--input-bg); 
+            background-color: var(--input-bg); /* 使用淺灰作為凹陷背景 */
             box-sizing: border-box;
             outline: none;
-            box-shadow: var(--inner-shadow);
+            box-shadow: var(--inner-shadow); /* 使用內陰影創造凹陷感 */
             transition: all 0.3s ease; 
             color: var(--text-primary);
-            margin-bottom: 20px; /* 增加間隔 */
+            margin-bottom: 20px;
         }
         input[type="number"]:focus, input[type="text"]:focus {
-            background-color: #e3e8f4; 
+            background-color: #E0E0E0; /* 略深一點的凹陷效果 */
             transform: scale(1.01); 
         }
 
@@ -106,14 +113,14 @@
             cursor: pointer;
             transition: all 0.3s ease; 
             color: var(--text-primary);
-            background: var(--main-color);
-            box-shadow: var(--shadow-dark); 
+            background: var(--main-color); /* 純白背景 */
+            box-shadow: var(--shadow-dark); /* 淺色凸起陰影 */
         }
         .config-buttons button:hover:not(.active) {
             transform: translateY(-2px); 
-            box-shadow: 7px 7px 15px rgba(174, 190, 218, 0.6), -7px -7px 15px rgba(255, 255, 255, 0.8);
+            box-shadow: 4px 4px 8px rgba(180, 180, 180, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.9);
         }
-        /* 激活狀態：深色凹陷 */
+        /* 激活狀態：深色凹陷 (保留顏色以區分) */
         .config-buttons button.active {
             background-color: var(--active-color);
             color: white;
@@ -141,7 +148,7 @@
         }
         button#calculate-btn:hover {
             opacity: 0.95;
-            box-shadow: 0 12px 25px rgba(255, 143, 74, 0.7); 
+            box-shadow: 0 10px 20px rgba(255, 143, 74, 0.6); 
         }
         button#calculate-btn:active {
             box-shadow: 0 3px 10px rgba(255, 143, 74, 0.6); 
@@ -149,7 +156,7 @@
         }
 
         /* ------------------------------------- */
-        /* 結果展示 (動畫定義) */
+        /* 結果展示 (卡片風格更新為白色 Clay) */
         /* ------------------------------------- */
         @keyframes fadeInSlide {
             from {
@@ -164,21 +171,27 @@
         .result-panel {
             margin-top: 35px;
             padding-top: 20px;
-            border-top: 1px solid rgba(174, 190, 218, 0.3);
+            border-top: 1px solid rgba(180, 180, 180, 0.3);
             display: none; 
             animation: fadeInSlide 0.6s ease-out forwards; 
         }
         
-        /* 狀態/建議卡片風格 (保持過渡) */
+        /* 狀態/建議卡片風格 (全部白色，用深色邊框和文字顏色區分) */
         .status-box, .action-steps, .dca-advice {
             transition: box-shadow 0.3s ease;
-            border: none;
+            border: 1px solid #E0E0E0; /* 增加淺色邊框以在白色背景上區分 */
             border-radius: 20px;
             margin-top: 15px;
             padding: 20px;
             font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); 
+            background-color: var(--main-color); /* 純白背景 */
+            box-shadow: var(--shadow-dark); /* 凸起效果 */
         }
+        .status-ok { color: var(--success-text); border-left: 5px solid var(--success-text); }
+        .status-warn { color: var(--warning-text); border-left: 5px solid var(--warning-text); }
+        .action-steps { color: var(--info-text); border-left: 5px solid var(--info-text); }
+        .dca-advice { color: var(--action-text); border-left: 5px solid var(--action-text); }
+
 
         /* ------------------------------------- */
         /* 其餘靜態樣式保持不變 */
@@ -190,7 +203,7 @@
             margin-bottom: 25px;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 3px 3px 8px rgba(174, 190, 218, 0.4); 
+            box-shadow: var(--shadow-dark); /* 表格整體凸起 */
         }
         .summary-table th, .summary-table td {
             text-align: left;
@@ -200,13 +213,9 @@
             border-bottom: 1px solid var(--input-bg);
         }
         .summary-table th {
-            background-color: var(--input-bg);
+            background-color: var(--input-bg); /* 表頭使用淺灰，略微區分 */
             color: var(--text-primary);
         }
-        .status-ok { background-color: var(--success-color); color: #38a169; }
-        .status-warn { background-color: var(--warning-color); color: #e53e3e; }
-        .action-steps { background-color: var(--info-color); color: var(--active-color); }
-        .dca-advice { background-color: var(--action-color); color: #dd6b20; }
         
         /* 手機上兩欄輸入保持 */
         .asset-config-row { display: flex; gap: 15px; }
@@ -221,10 +230,10 @@
 <body>
 
 <div class="container">
-    <h2>🎯 Claymorphism 投資組合</h2>
+    <h2>投資組合評估</h2>
     
     <div class="input-group">
-        <label>設定目標比例 (Asset A / Asset B)</label>
+        <label>設定目標比例</label>
         <div class="config-buttons">
             <button id="btn-80-20" class="active" onclick="setTarget(80, 20)">80% / 20%</button>
             <button id="btn-70-30" onclick="setTarget(70, 30)">70% / 30%</button>
@@ -235,11 +244,11 @@
 
     <div class="asset-config-row">
         <div class="input-group">
-            <label for="assetAName">核心資產 (Asset A):</label>
+            <label for="assetAName">核心資產:</label>
             <input type="text" id="assetAName" value="QQQ" placeholder="例如: VOO, QQQ">
         </div>
         <div class="input-group">
-            <label for="assetBName">衛星資產 (Asset B):</label>
+            <label for="assetBName">衛星資產:</label>
             <input type="text" id="assetBName" placeholder="請輸入 (例如: BND, JEPI)">
         </div>
     </div>
@@ -251,30 +260,30 @@
 
     <div class="asset-config-row">
         <div class="input-group">
-            <label id="assetALabel" for="qqqVal">QQQ 當前市值 (K$)</label>
+            <label id="assetALabel" for="qqqVal">QQQ 當前市值 (K 美元)</label>
             <input type="number" id="qqqVal" placeholder="例如: 8.50">
         </div>
         <div class="input-group">
-            <label id="assetBLabel" for="jepiVal">請輸入 當前市值 (K$)</label>
+            <label id="assetBLabel" for="jepiVal">請輸入 當前市值 (K 美元)</label>
             <input type="number" id="jepiVal" placeholder="例如: 1.50">
         </div>
     </div>
     
     <div class="input-group">
-        <label for="dcaAmount">每月供款金額 (K$)</label>
+        <label for="dcaAmount">每月供款金額 (K 美元)</label>
         <input type="number" id="dcaAmount" placeholder="例如: 0.50 (即 $500)">
     </div>
 
     <button id="calculate-btn" onclick="calculate()">執行計算與評估</button>
 
     <div id="resultPanel" class="result-panel">
-        <h3 style="font-size: 1.3rem; margin-top: 0; color: var(--text-primary);">📊 組合狀況概要</h3>
+        <h3 style="font-size: 1.3rem; margin-top: 0; color: var(--text-primary);">組合狀況概要</h3>
 
         <table class="summary-table">
             <thead>
                 <tr>
                     <th>資產</th>
-                    <th>市值 (K$)</th>
+                    <th>市值 (K 美元)</th>
                     <th>比例</th>
                     <th>目標</th>
                 </tr>
@@ -304,7 +313,7 @@
         <div id="actionSteps" class="action-steps" style="display:none;"></div>
     </div>
     
-    <div class="note">所有金額以 K$ (千美元) 計算。</div>
+    <div class="note">所有金額以 K 美元 (千美元) 計算。</div>
 </div>
 
 <script>
@@ -349,8 +358,8 @@
         const minA = targetA_pct - tolerance;
         const maxA = targetA_pct + tolerance;
         
-        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K$)`;
-        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K$)`;
+        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K 美元)`;
+        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K 美元)`;
         document.getElementById('resAssetNameA').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
         document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
@@ -358,11 +367,12 @@
 
         const assetAPct = (qqqVal / totalVal) * 100;
         
-        document.getElementById('resQQQVal').innerText = `K$${qqqVal.toFixed(2)}`;
+        // 輸出結果格式：數值在前，K 美元在後
+        document.getElementById('resQQQVal').innerText = `${qqqVal.toFixed(2)} K 美元`;
         document.getElementById('resQQQPct').innerText = `${assetAPct.toFixed(2)}%`;
-        document.getElementById('resJEPIVal').innerText = `K$${jepiVal.toFixed(2)}`;
+        document.getElementById('resJEPIVal').innerText = `${jepiVal.toFixed(2)} K 美元`;
         document.getElementById('resJEPIPct').innerText = `${(100 - assetAPct).toFixed(2)}%`;
-        document.getElementById('resTotal').innerText = `K$${totalVal.toFixed(2)}`;
+        document.getElementById('resTotal').innerText = `${totalVal.toFixed(2)} K 美元`;
 
         // ********** 動畫邏輯更新 **********
         const resultPanel = document.getElementById('resultPanel');
@@ -380,18 +390,18 @@
         
         if (assetAPct > maxA) {
             needsRebalance = true;
-            message = `⚠️ ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
+            message = ` ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
             statusBox.className = "status-box status-warn";
         } else if (assetAPct < minA) {
             needsRebalance = true;
-            message = `⚠️ ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
+            message = ` ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
             statusBox.className = "status-box status-warn";
         } else {
-            message = "✅ 投資組合比例健康，無需調整現有倉位。";
+            message = " 投資組合比例健康，無需調整現有倉位。";
             statusBox.className = "status-box status-ok";
         }
         
-        statusBox.innerText = message;
+        statusBox.innerText = message.trim(); 
 
         // --- 傳統再平衡建議 ---
         if (needsRebalance) {
@@ -404,11 +414,12 @@
             const buyColor = 'var(--active-color)'; 
             const sellColor = '#c53030'; 
 
-            const assetAAct = diffA > 0 ? `<span style="color:${buyColor}">買入 K$${Math.abs(diffA).toFixed(2)}</span>` : `<span style="color:${sellColor}">賣出 K$${Math.abs(diffA).toFixed(2)}</span>`;
-            const assetBAct = diffB > 0 ? `<span style="color:${buyColor}">買入 K$${Math.abs(diffB).toFixed(2)}</span>` : `<span style="color:${sellColor}">賣出 K$${Math.abs(diffB).toFixed(2)}</span>`;
+            // 輸出結果格式：數值在前，K 美元在後
+            const assetAAct = diffA > 0 ? `<span style="color:${buyColor}">買入 ${Math.abs(diffA).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}">賣出 ${Math.abs(diffA).toFixed(2)} K 美元</span>`;
+            const assetBAct = diffB > 0 ? `<span style="color:${buyColor}">買入 ${Math.abs(diffB).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}">賣出 ${Math.abs(diffB).toFixed(2)} K 美元</span>`;
 
             actionSteps.innerHTML = `
-                <strong>🛠️ 傳統再平衡建議 (倉位調整)：</strong><br>
+                <strong>傳統再平衡建議 (倉位調整)：</strong><br>
                 為了達到 ${targetA_pct}/${targetB_pct} 比例，您需要執行以下操作：<br>
                 1. ${assetAName}: ${assetAAct}<br>
                 2. ${assetBName}: ${assetBAct}
@@ -424,31 +435,32 @@
             if (needsRebalance) {
                 if (assetAPct > targetA_pct) {
                     dcaMsg = `
-                        <strong>🔥 月供建議 (修正模式)：</strong><br>
-                        由於 ${assetAName} 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
-                        <br>➡️ **${assetBName}**
+                        <strong>月供建議 (修正模式)：</strong><br>
+                        由於 ${assetAName} 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
+                        <br> ➡️ **${assetBName}**
                         <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
                     `;
                 } else if (assetAPct < targetA_pct) { 
                      dcaMsg = `
-                        <strong>🔥 月供建議 (修正模式)：</strong><br>
-                        由於 ${assetAName} 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
-                        <br>➡️ **${assetAName}**
+                        <strong>月供建議 (修正模式)：</strong><br>
+                        由於 ${assetAName} 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
+                        <br> ➡️ **${assetAName}**
                         <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
                     `;
                 }
             } else {
                 const dcaA = dcaAmount * (targetA_pct / 100);
                 const dcaB = dcaAmount * (targetB_pct / 100);
+                // 輸出結果格式：數值在前，K 美元在後
                 dcaMsg = `
-                    <strong>👍 月供建議 (正常模式)：</strong><br>
+                    <strong>月供建議 (正常模式)：</strong><br>
                     目前的倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
-                    <br>➡️ ${assetAName} ${targetA_pct}% (K$${dcaA.toFixed(2)})
-                    <br>➡️ ${assetBName} ${targetB_pct}% (K$${dcaB.toFixed(2)})
+                    <br> ➡️ ${assetAName} ${targetA_pct}% (${dcaA.toFixed(2)} K 美元)
+                    <br> ➡️ ${assetBName} ${targetB_pct}% (${dcaB.toFixed(2)} K 美元)
                 `;
             }
         } else {
-            dcaMsg = "請輸入「每月供款金額 (K$)」以獲取月供分配建議。";
+            dcaMsg = "請輸入「每月供款金額 (K 美元)」以獲取月供分配建議。";
         }
 
         dcaAdvice.innerHTML = dcaMsg;
