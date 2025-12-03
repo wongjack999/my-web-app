@@ -1,15 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>雙主題投資組合再平衡計算器</title>
+    <style>
+        /* ****** 核心變量定義 (來自舊計算機) ****** */
+        :root {
+            --orange-calc: #FF8F4A; /* 主要操作橙色 */
+            --orange-shadow: 0 5px 10px rgba(255, 143, 74, 0.5);
+            --transition-speed: 0.3s ease;
+            --calc-radius: 40px; /* 計算機大圓角 */
+            --button-radius: 20px; /* 按鈕圓角 */
+            --form-bg-light: #f5f5f5; /* 表單輸入背景 */
+            --form-bg-dark: #1a1e22;
+            --input-border-light: 1px solid rgba(0, 0, 0, 0.1);
+            --input-border-dark: 1px solid rgba(45, 52, 60, 0.5);
+            --table-header-bg: var(--key-secondary-bg);
+            --table-text-color: var(--key-text-color);
+        }
+        
+        /* ------------------------------------- */
+        /* 淺色模式 (Glassmorphism) 變量 */
+        /* ------------------------------------- */
+        .light-theme {
+            --bg-color: linear-gradient(135deg, #D9E4FF, #E0C7FF);
+            --container-bg: rgba(255, 255, 255, 0.45); /* 透明玻璃 */
+            --calc-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            --display-color: #333333;
+            --key-default-bg: rgba(255, 255, 255, 0.6);
+            --key-secondary-bg: rgba(200, 200, 200, 0.3);
+            --key-shadow: 4px 4px 8px rgba(0, 0, 0, 0.08), -4px -4px 8px rgba(255, 255, 255, 0.8);
+            --key-text-color: #333333;
+            --border-style: 1px solid rgba(255, 255, 255, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.8);
+        }
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Investment Ratio Calculator UI</title>
-    </head>
+        /* ------------------------------------- */
+        /* 深色模式 (Dark Neumorphism) 變量 */
+        /* ------------------------------------- */
+        .dark-theme {
+            --bg-color: linear-gradient(145deg, #2c323a, #1a1e22);
+            --container-bg: #22272c;
+            --calc-shadow: 15px 15px 30px rgba(0, 0, 0, 0.5), -15px -15px 30px rgba(45, 52, 60, 0.5);
+            --display-color: #ffffff;
+            --key-default-bg: #272c33;
+            --key-secondary-bg: #1e2227;
+            --key-shadow: 5px 5px 10px #1a1e22, -5px -5px 10px #2c323a;
+            --key-text-color: #ffffff;
+            --border-style: none;
+            --input-bg: #1e2227;
+        }
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+        /* ****** 通用樣式 (整合舊計算機) ****** */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-color); /* 主題背景 */
+            transition: background var(--transition-speed);
+            color: var(--display-color); /* 統一字體顏色 */
+        }
+        
+        .calculator { /* 替換了你原來的 .container */
+            background: var(--container-bg);
+            padding: 25px;
+            border-radius: var(--calc-radius);
+            box-shadow: var(--calc-shadow);
+            width: 100%;
+            max-width: 650px; 
+            border: var(--border-style);
+            transition: all var(--transition-speed);
+            position: relative;
+            color: var(--key-text-color); /* 確保內部文字顏色跟隨主題 */
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--display-color);
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            transition: color var(--transition-speed);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--key-text-color);
+            opacity: 0.85;
+        }
+
+        /* 輸入框樣式 */
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px; /* 略微圓角 */
+            font-size: 1rem;
+            box-sizing: border-box;
+            color: var(--display-color);
+            background: var(--input-bg);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+            transition: all var(--transition-speed);
+        }
+        .dark-theme input[type="number"], .dark-theme input[type="text"] {
+             box-shadow: inset 3px 3px 6px #1a1e22, inset -3px -3px 6px #2c323a;
+             background: var(--key-secondary-bg);
+        }
+        
+        /* ------------------------------------- */
+        /* 按鈕樣式 (使用舊計算機的 .key 概念) */
+        /* ------------------------------------- */
+        .config-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .config-buttons button, button#calculate-btn {
+            padding: 15px 10px;
+            border: none;
+            border-radius: var(--button-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            color: var(--key-text-color);
+            background: var(--key-default-bg);
+            box-shadow: var(--key-shadow);
+        }
+
+        /* config-buttons (次要按鈕，用 secondary 顏色) */
+        .config-buttons button {
+             flex: 1;
+             background: var(--key-secondary-bg);
+             color: var(--key-text-color);
+             box-shadow: var(--key-shadow);
+        }
+        .config-buttons button.active {
+             background: var(--orange-calc); /* 主題橙色作為選中/活動狀態 */
+             color: white;
+             box-shadow: var(--orange-shadow);
+        }
+
+        /* Calculate 按鈕 (使用 operator 橙色) */
+        button#calculate-btn {
+            width: 100%;
+            background: var(--orange-calc); 
+            color: white;
+            box-shadow: var(--orange-shadow);
+            margin-top: 15px;
+            font-size: 1.15rem;
+        }
+        
+        /* 按下效果 */
+        .config-buttons button:active, button#calculate-btn:active {
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+            transform: scale(0.98);
+        }
+        .dark-theme .config-buttons button:active, .dark-theme button#calculate-btn:active {
+            box-shadow: inset 4px 4px 8px #1a1e22, inset -4px -4px 8px #2c323a;
+        }
+
+
+        /* ------------------------------------- */
+        /* 結果區域 (整合主題) */
+        /* ------------------------------------- */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            color: var(--key-text-color);
+        }
+        .summary-table th, .summary-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--key-secondary-bg); /* 用次要背景色做分隔線 */
+            font-size: 0.95rem;
+            transition: all var(--transition-speed);
+        }
+        .summary-table th {
+            background-color: var(--key-secondary-bg);
+            color: var(--key-text-color);
+            font-weight: 600;
+        }
+        .highlight {
+            font-weight: bold;
+            color: var(--orange-calc); /* 結果數字用橙色強調 */
+        }
+        
+        /* 狀態/建議 容器 */
+        .status-box, .action-steps, .dca-advice {
+             border-radius: 12px;
+             margin-top: 15px;
+             padding: 15px;
+             font-size: 0.95rem;
+             transition: all var(--transition-speed);
+        }
+
+        .status-ok { /* 綠色保持不變 */
+             background-color: #c6f6d5;
+             color: #22543d;
+             border: 1px solid #9ae6b4;
+        }
+        .status-warn { /* 紅色保持不變 */
+             background-color: #fed7d7;
+             color: #742a2a;
+             border: 1px solid #feb2b2;
+        }
+        
+        /* 建議區塊 */
+        .action-steps {
+             background-color: var(--key-secondary-bg);
+             border-left: 4px solid var(--orange-calc); 
+             color: var(--key-text-color);
+        }
+        .dca-advice {
+             background-color: var(--key-secondary-bg);
+             border-left: 4px solid var(--display-color); /* 用主題文字色 */
+             color: var(--key-text-color);
+        }
+        
+        .note {
+             font-size: 0.8rem;
+             color: var(--key-text-color);
+             opacity: 0.6;
+             margin-top: 20px;
+             text-align: center;
+        }
+
+        /* ------------------------------------- */
+        /* 主題切換開關 (從舊計算機複製) */
+        /* ------------------------------------- */
+        .theme-toggle {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 50px;
+            height: 25px;
+            background: var(--key-secondary-bg);
+            border-radius: 12.5px;
+            cursor: pointer;
+            box-shadow: var(--key-shadow);
+            transition: background var(--transition-speed);
+        }
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--orange-calc);
+            border-radius: 50%;
+            top: 2.5px;
+            left: 2.5px;
+            transition: transform var(--transition-speed);
+        }
+        .dark-theme .theme-toggle::before {
+            transform: translateX(25px);
+        }
+        .toggle-label {
+            position: absolute;
+            top: 55px;
+            right: 0px;
+            color: var(--display-color);
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: color var(--transition-speed);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-panel {
+            margin-top: 25px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+    </style>
+</head>
+<body class="light-theme">
+
+<div class="calculator">
+    
+    <div id="theme-toggle" class="theme-toggle" onclick="toggleTheme()"></div>
+    <div class="toggle-label" id="theme-label">淺色模式 (Glassmorphism)</div>
+    
+    <h2>📊 組合再平衡與月供評估 (K$)</h2>
+    
+    <div class="input-group">
+        <label>🎯 **設定目標比例 (Asset A / Asset B)**</label>
+        <div class="config-buttons">
+            <button id="btn-80-20" class="active" onclick="setTarget(80, 20)">80% / 20%</button>
+            <button id="btn-70-30" onclick="setTarget(70, 30)">70% / 30%</button>
+            <button id="btn-60-40" onclick="setTarget(60, 40)">60% / 40%</button>
+            <button id="btn-50-50" onclick="setTarget(50, 50)">50% / 50%</button>
+        </div>
+    </div>
+
+    <div class="asset-config-row">
+        <div class="input-group">
+            <label for="assetAName">核心資產名稱 (Asset A):</label>
+            <input type="text" id="assetAName" value="QQQ" placeholder="例如: VOO, QQQ">
+        </div>
+        <div class="input-group">
+            <label for="assetBName">衛星資產名稱 (Asset B):</label>
+            <input type="text" id="assetBName" value="JEPI" placeholder="請輸入 (例如: BND, JEPI)">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="tolerance">⚖️ **容忍度 (百分比 %)**</label>
+        <input type="number" id="tolerance" value="5" placeholder="例如: 5 (代表 ±5%)">
+    </div>
+
+    <hr style="margin: 20px 0; border-color: var(--key-secondary-bg);">
+    
+    <div class="asset-config-row">
+        <div class="input-group">
+            <label id="assetALabel" for="qqqVal">QQQ 當前市值 (K$)</label>
+            <input type="number" id="qqqVal" placeholder="例如: 8.50">
+        </div>
+        <div class="input-group">
+            <label id="assetBLabel" for="jepiVal">JEPI 當前市值 (K$)</label>
+            <input type="number" id="jepiVal" placeholder="例如: 1.50">
+        </div>
+    </div>
+    
+    <div class="input-group">
+        <label for="dcaAmount">📈 每月供款金額 (K$)</label>
+        <input type="number" id="dcaAmount" placeholder="例如: 0.50 (即 $500)">
+    </div>
+
+    <button id="calculate-btn" onclick="calculate()">執行計算與評估</button>
+
+    <div id="resultPanel" class="result-panel">
+        
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>資產</th>
+                    <th>目前市值 (K$)</th>
+                    <th>目前比例</th>
+                    <th>目標</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="resAssetNameA">QQQ</td>
+                    <td id="resQQQVal" class="highlight">-</td>
+                    <td id="resQQQPct">-</td>
+                    <td id="resTargetA">80% (±5%)</td>
+                </tr>
+                <tr>
+                    <td id="resAssetNameB">JEPI</td>
+                    <td id="resJEPIVal" class="highlight">-</td>
+                    <td id="resJEPIPct">-</td>
+                    <td id="resTargetB">20% (±5%)</td>
+                </tr>
+                <tr>
+                    <td><strong>總資產</strong></td>
+                    <td id="resTotal" class="highlight" colspan="3">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="statusBox" class="status-box"></div>
+        <div id="dcaAdvice" class="dca-advice"></div>
+        <div id="actionSteps" class="action-steps" style="display:none;"></div>
+    </div>
+    
+    <div class="note">所有金額以 K$ (千美元) 計算。</div>
+</div>
+
+
+<script>
+    // 全局變量用於存儲當前目標比例
+    let targetA_pct = 80;
+    let targetB_pct = 20;
+    const themeLabel = document.getElementById('theme-label');
+
+    // 設置目標比例 (保留用戶原有邏輯)
+    function setTarget(A, B) {
+        targetA_pct = A;
+        targetB_pct = B;
+        
+        // 更新按鈕樣式 
+        document.getElementById('btn-80-20').classList.toggle('active', A === 80);
+        document.getElementById('btn-70-30').classList.toggle('active', A === 70);
+        document.getElementById('btn-60-40').classList.toggle('active', A === 60); 
+        document.getElementById('btn-50-50').classList.toggle('active', A === 50); 
+
+        // 更新結果表格中的目標顯示 (預先更新)
+        const tolerance = parseFloat(document.getElementById('tolerance').value) || 5;
+        document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
+        document.getElementById('resTargetB').innerText = `${targetB_pct}% (±${tolerance}%)`;
+    }
+    
+    // 初始化目標比例
+    document.addEventListener('DOMContentLoaded', () => {
+        setTarget(80, 20); // 預設 80/20
+    });
+
+    // ****** 主題切換邏輯 (來自舊計算機) ******
+    function toggleTheme() {
+        const body = document.body;
+        if (body.classList.contains('light-theme')) {
+            body.classList.remove('light-theme');
+            body.classList.add('dark-theme');
+            themeLabel.textContent = '深色模式 (Neumorphism)';
+        } else {
+            body.classList.remove('dark-theme');
+            body.classList.add('light-theme');
+            themeLabel.textContent = '淺色模式 (Glassmorphism)';
+        }
+    }
+    
+    // ****** 核心計算邏輯 (保留用戶原有邏輯) ******
+    function calculate() {
+        // 1. 獲取自定義名稱和設定
+        const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
+        const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
+        const tolerance = parseFloat(document.getElementById('tolerance').value) || 5;
+        
+        // 2. 獲取數值輸入
+        const qqqVal = parseFloat(document.getElementById('qqqVal').value) || 0;
+        const jepiVal = parseFloat(document.getElementById('jepiVal').value) || 0;
+        const dcaAmount = parseFloat(document.getElementById('dcaAmount').value) || 0;
+        
+        const totalVal = qqqVal + jepiVal;
+
+        if (totalVal <= 0) {
+            alert("總資產必須大於 0 才能計算比例");
+            return;
+        }
+
+        // 3. 計算容忍範圍
+        const minA = targetA_pct - tolerance;
+        const maxA = targetA_pct + tolerance;
+        
+        // 4. 動態更新介面標籤
+        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K$)`;
+        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K$)`;
+        document.getElementById('resAssetNameA').innerText = assetAName;
+        document.getElementById('resAssetNameB').innerText = assetBName;
+        document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
+        document.getElementById('resTargetB').innerText = `${targetB_pct}% (±${tolerance}%)`;
+
+        // 5. 計算比例 (核心資產 A 佔比)
+        const assetAPct = (qqqVal / totalVal) * 100;
+        
+        // 6. 更新表格顯示
+        document.getElementById('resQQQVal').innerText = `K$${qqqVal.toFixed(2)}`;
+        document.getElementById('resQQQPct').innerText = `${assetAPct.toFixed(2)}%`;
+        document.getElementById('resJEPIVal').innerText = `K$${jepiVal.toFixed(2)}`;
+        document.getElementById('resJEPIPct').innerText = `${(100 - assetAPct).toFixed(2)}%`;
+        document.getElementById('resTotal').innerText = `K$${totalVal.toFixed(2)}`;
+
+        document.getElementById('resultPanel').style.display = "block";
+
+        // 7. 判斷邏輯 (Trigger Point)
+        const statusBox = document.getElementById('statusBox');
+        const actionSteps = document.getElementById('actionSteps');
+        const dcaAdvice = document.getElementById('dcaAdvice');
+        
+        let needsRebalance = false;
+        let message = "";
+        
+        if (assetAPct > maxA) {
+            needsRebalance = true;
+            message = `⚠️ ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
+            statusBox.className = "status-box status-warn";
+        } else if (assetAPct < minA) {
+            needsRebalance = true;
+            message = `⚠️ ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
+            statusBox.className = "status-box status-warn";
+        } else {
+            message = "✅ 投資組合比例健康，無需調整現有倉位。";
+            statusBox.className = "status-box status-ok";
+        }
+        
+        statusBox.innerText = message;
+
+        // --- 8. 傳統再平衡建議 (現有倉位) ---
+        if (needsRebalance) {
+            actionSteps.style.display = "block";
+            
+            // 目標市值
+            const targetA = totalVal * (targetA_pct / 100);
+            const diffA = targetA - qqqVal; // 正數：買入 A；負數：賣出 A
+            const diffB = -diffA; // 資產 B 必須抵銷
+            
+            const assetAAct = diffA > 0 ? `<span style="color:green">買入 K$${Math.abs(diffA).toFixed(2)}</span>` : `<span style="color:red">賣出 K$${Math.abs(diffA).toFixed(2)}</span>`;
+            const assetBAct = diffB > 0 ? `<span style="color:green">買入 K$${Math.abs(diffB).toFixed(2)}</span>` : `<span style="color:red">賣出 K$${Math.abs(diffB).toFixed(2)}</span>`;
+
+            actionSteps.innerHTML = `
+                <strong>🛠️ 傳統再平衡建議 (倉位調整)：</strong><br>
+                如果您決定立即調整現有倉位，需要執行以下操作：<br>
+                為了達到 ${targetA_pct}/${targetB_pct} 比例：<br>
+                1. ${assetAName}: ${assetAAct}<br>
+                2. ${assetBName}: ${assetBAct}
+            `;
+        } else {
+            actionSteps.style.display = "none";
+        }
+
+        // --- 9. 月供分配建議 (DCA Rebalancing) ---
+        let dcaMsg = "";
+
+        if (dcaAmount > 0) {
+            if (needsRebalance) {
+                // 如果已經觸發再平衡，月供應全力投入不足的資產
+                if (assetAPct > targetA_pct) { // 核心資產 A 過重，月供全力買資產 B
+                    dcaMsg = `
+                        <strong>🔥 月供建議 (修正模式)：</strong><br>
+                        由於 ${assetAName} 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
+                        <br>➡️ <strong style="color: ${document.body.classList.contains('dark-theme') ? '#48bb78' : 'darkgreen'}">${assetBName}</strong>
+                        <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
+                    `;
+                } else if (assetAPct < targetA_pct) { // 核心資產 A 過輕，月供全力買資產 A
+                     dcaMsg = `
+                        <strong>🔥 月供建議 (修正模式)：</strong><br>
+                        由於 ${assetAName} 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K$) 的月供全部投入：
+                        <br>➡️ <strong style="color: ${document.body.classList.contains('dark-theme') ? '#48bb78' : 'darkgreen'}">${assetAName}</strong>
+                        <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
+                    `;
+                }
+            } else {
+                // 比例健康，月供按目標比例分配
+                const dcaA = dcaAmount * (targetA_pct / 100);
+                const dcaB = dcaAmount * (targetB_pct / 100);
+                dcaMsg = `
+                    <strong>👍 月供建議 (正常模式)：</strong><br>
+                    目前的倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
+                    <br>➡️ ${assetAName} ${targetA_pct}% (K$${dcaA.toFixed(2)})
+                    <br>➡️ ${assetBName} ${targetB_pct}% (K$${dcaB.toFixed(2)})
+                `;
+            }
+        } else {
+            dcaMsg = "請輸入「每月供款金額 (K$)」以獲取月供分配建議。";
+        }
+
+        dcaAdvice.innerHTML = dcaMsg;
+    }
+</script>
+
+</body>
+</html>
