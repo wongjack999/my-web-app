@@ -93,6 +93,9 @@
             font-size: 0.85rem;
             color: var(--screen-label);
             display: block;
+            /* ****** 核心修改：增加標籤底部間距 ****** */
+            margin-bottom: 10px; 
+            /* ************************************** */
         }
         .screen-display .sub-info {
             display: flex;
@@ -270,7 +273,7 @@
 <body>
 
 <div class="container">
-    <h2>投資組合再平衡儀表</h2>
+    <h2>投資組合再平衡</h2>
     
     <div id="top-display" class="screen-display">
         <span class="label">當前總資產 (K 美元) / 目標比例</span>
@@ -298,7 +301,7 @@
         </div>
         <div class="input-group">
             <label for="assetBName">衛星資產名稱:</label>
-            <input type="text" id="assetBName" value="BND" placeholder="例如: BND, JEPI">
+            <input type="text" id="assetBName" placeholder="例如: BND, JEPI">
         </div>
     </div>
 
@@ -362,7 +365,7 @@
         <div id="actionSteps" class="action-steps" style="display:none;"></div>
     </div>
     
-    <div class="note">所有金額以 K 美元 (千美元) 計算。</div>
+    
 </div>
 
 <script>
