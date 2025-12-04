@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>投資組合評估 - 黑白金屬儀表板</title>
+    <title>投資組合評估 - 黑白金屬儀表板 (簡化)</title>
     <style>
         /* ****** 黑白 Duotone 變量 ****** */
         :root {
@@ -30,6 +30,12 @@
             --btn-calc-color: var(--metal-dark); /* 計算按鈕使用深黑金屬色 */
             --btn-calc-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
             --active-color: #555555; /* 比例活躍狀態 (中灰) */
+            
+            /* 狀態顏色 (用深色邊框和強烈文字顏色區分) */
+            --status-ok-border: #000000;
+            --status-warn-border: #CC0000;
+            --action-border: #666666;
+            --dca-border: #333333;
         }
 
         body {
@@ -93,9 +99,7 @@
             font-size: 0.85rem;
             color: var(--screen-label);
             display: block;
-            /* ****** 核心修改：增加標籤底部間距 ****** */
             margin-bottom: 10px; 
-            /* ************************************** */
         }
         .screen-display .sub-info {
             display: flex;
@@ -111,9 +115,73 @@
         }
 
         /* ------------------------------------- */
-        /* 輸入框風格 (淺凹槽) */
+        /* 輸入框組件 (整合資產名稱與市值) */
         /* ------------------------------------- */
-        input[type="number"], input[type="text"] {
+        .asset-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-item {
+            flex: 1;
+        }
+
+        .input-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* 新增的整合輸入框樣式 */
+        .asset-input {
+            width: 100%;
+            display: flex;
+            border-radius: 10px;
+            box-sizing: border-box;
+            box-shadow: var(--inner-shadow-dark);
+            background-color: var(--main-color);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 44px; /* 固定高度 */
+        }
+        
+        .asset-input input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 0 12px 15px;
+            border: none;
+            font-size: 1rem;
+            background: none;
+            color: var(--text-primary);
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: none; /* 移除內部陰影 */
+            margin-bottom: 0;
+            border-right: 1px solid var(--metal-light);
+        }
+
+        .asset-input input[type="number"] {
+            width: 100px; /* 市值欄位固定寬度 */
+            padding: 12px 15px 12px 10px;
+            border: none;
+            font-size: 1rem;
+            background: none;
+            color: var(--text-primary);
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: none; /* 移除內部陰影 */
+            text-align: right;
+            margin-bottom: 0;
+        }
+
+        .asset-input input:focus {
+             background-color: var(--metal-light);
+        }
+        
+        /* 獨立的數字輸入框 (如月供) */
+        input.standard-input[type="number"] {
             width: 100%;
             padding: 12px 15px;
             border: none;
@@ -127,18 +195,10 @@
             color: var(--text-primary);
             margin-bottom: 20px;
         }
-        input[type="number"]:focus, input[type="text"]:focus {
+        input.standard-input[type="number"]:focus {
             background-color: var(--metal-light);
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
         /* ------------------------------------- */
         /* 比例選擇按鈕 (凸起金屬按鈕) */
         /* ------------------------------------- */
@@ -245,23 +305,21 @@
         /* 狀態顏色 (用深色邊框和強烈文字顏色區分) */
         .status-ok { 
             color: #111111; 
-            border-left: 5px solid #000000; /* 純黑邊框 */
+            border-left: 5px solid var(--status-ok-border); /* 純黑邊框 */
         }
         .status-warn { 
             color: #CC0000; /* 保留警告色為深紅色，作為唯一的非灰/黑/白突出色 */
-            border-left: 5px solid #CC0000; 
+            border-left: 5px solid var(--status-warn-border); 
         }
         .action-steps { 
             color: #000000; 
-            border-left: 5px solid #666666;
+            border-left: 5px solid var(--action-border);
         }
         .dca-advice { 
             color: #333333; 
-            border-left: 5px solid #333333;
+            border-left: 5px solid var(--dca-border);
         }
         
-        .asset-config-row { display: flex; gap: 15px; }
-        .asset-config-row > div { flex: 1; }
         .note { font-size: 0.8rem; color: var(--text-secondary); margin-top: 30px; text-align: center; }
 
         @keyframes fadeInSlide {
@@ -273,14 +331,14 @@
 <body>
 
 <div class="container">
-    <h2>投資組合再平衡</h2>
+    <h2>投資組合再平衡 (簡化)</h2>
     
     <div id="top-display" class="screen-display">
-        <span class="label">當前總資產 (K 美元) / 目標比例</span>
+        <span class="label">當前總資產 (K 美元) / 核心資產目標比例</span>
         <div class="main-value" id="resTotalDisplay">0.00</div>
         <div class="sub-info">
             <span>核心資產 (<span id="resAssetNameA_short">A</span>) 比例:</span> 
-            <span class="percentage" id="resQQQPctDisplay">0.00%</span>
+            <span class="percentage" id="resAssetAPctDisplay">0.00%</span>
         </div>
     </div>
 
@@ -294,36 +352,25 @@
         </div>
     </div>
     
-    <div class="asset-config-row">
-        <div class="input-group">
-            <label for="assetAName">核心資產名稱:</label>
-            <input type="text" id="assetAName" value="QQQ" placeholder="例如: VOO, QQQ">
-        </div>
-        <div class="input-group">
-            <label for="assetBName">衛星資產名稱:</label>
-            <input type="text" id="assetBName" placeholder="例如: BND, JEPI">
+    <div class="input-item">
+        <label for="assetAName">核心資產名稱與市值 (K 美元)</label>
+        <div class="asset-input">
+            <input type="text" id="assetAName" value="QQQ" placeholder="資產代號, 例如: VOO">
+            <input type="number" id="assetAVal" placeholder="例如: 8.50">
         </div>
     </div>
 
-    <div class="input-group">
-        <label for="tolerance">容忍度 (%)</label>
-        <input type="number" id="tolerance" value="5" placeholder="例如: 5 (代表 ±5%)">
+    <div class="input-item">
+        <label for="assetBName">衛星資產名稱與市值 (K 美元)</label>
+        <div class="asset-input">
+            <input type="text" id="assetBName" value="BND" placeholder="資產代號, 例如: BND">
+            <input type="number" id="assetBVal" placeholder="例如: 1.50">
+        </div>
     </div>
 
-    <div class="asset-config-row">
-        <div class="input-group">
-            <label id="assetALabel" for="qqqVal">核心當前市值 (K 美元)</label>
-            <input type="number" id="qqqVal" placeholder="例如: 8.50">
-        </div>
-        <div class="input-group">
-            <label id="assetBLabel" for="jepiVal">衛星當前市值 (K 美元)</label>
-            <input type="number" id="jepiVal" placeholder="例如: 1.50">
-        </div>
-    </div>
-    
     <div class="input-group">
         <label for="dcaAmount">每月供款金額 (K 美元)</label>
-        <input type="number" id="dcaAmount" placeholder="例如: 0.50 (即 $500)">
+        <input type="number" id="dcaAmount" class="standard-input" placeholder="例如: 0.50 (即 $500)">
     </div>
 
     <button id="calculate-btn" onclick="calculate()">執行評估</button>
@@ -337,21 +384,21 @@
                     <th>資產</th>
                     <th>市值 (K 美元)</th>
                     <th>比例</th>
-                    <th>目標</th>
+                    <th>目標比例</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td id="resAssetNameA">QQQ</td>
-                    <td id="resQQQVal">-</td>
-                    <td id="resQQQPct">-</td>
-                    <td id="resTargetA">80% (±5%)</td>
+                    <td id="resAssetAVal">-</td>
+                    <td id="resAssetAPct">-</td>
+                    <td id="resTargetA">80%</td>
                 </tr>
                 <tr>
                     <td id="resAssetNameB">BND</td>
-                    <td id="resJEPIVal">-</td>
-                    <td id="resJEPIPct">-</td>
-                    <td id="resTargetB">20% (±5%)</td>
+                    <td id="resAssetBVal">-</td>
+                    <td id="resAssetBPct">-</td>
+                    <td id="resTargetB">20%</td>
                 </tr>
                 <tr>
                     <td style="font-weight: 700;">總資產</td>
@@ -361,15 +408,13 @@
         </table>
 
         <div id="statusBox" class="status-box"></div>
-        <div id="dcaAdvice" class="dca-advice"></div>
         <div id="actionSteps" class="action-steps" style="display:none;"></div>
+        <div id="dcaAdvice" class="dca-advice"></div>
     </div>
-    
     
 </div>
 
 <script>
-    // JS Logic (保持不變)
     let targetA_pct = 80;
     let targetB_pct = 20;
 
@@ -382,40 +427,39 @@
         document.getElementById('btn-60-40').classList.toggle('active', A === 60);
         document.getElementById('btn-50-50').classList.toggle('active', A === 50);
 
-        const tolerance = parseFloat(document.getElementById('tolerance').value) || 5;
-        document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
-        document.getElementById('resTargetB').innerText = `${targetB_pct}% (±${tolerance}%)`;
+        // 移除容忍度顯示
+        document.getElementById('resTargetA').innerText = `${targetA_pct}%`;
+        document.getElementById('resTargetB').innerText = `${targetB_pct}%`;
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始設定資產名稱
+        // 確保初始資產名稱顯示正確
         const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
         const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
-        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K 美元)`;
-        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K 美元)`;
         document.getElementById('resAssetNameA_short').innerText = assetAName;
+        document.getElementById('resAssetNameA').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
-        
+
         setTarget(80, 20);
-        // 確保頂部顯示區有初始值
         document.getElementById('resTotalDisplay').innerText = '0.00';
-        document.getElementById('resQQQPctDisplay').innerText = '0.00%';
+        document.getElementById('resAssetAPctDisplay').innerText = '0.00%';
     });
 
     function calculate() {
         const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
         const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
-        const tolerance = parseFloat(document.getElementById('tolerance').value) || 5;
+        // 容忍度取消，固定為 5% 作為再平衡的「觸發點」 (Internal Logic)
+        const tolerance = 5; 
         
-        const qqqVal = parseFloat(document.getElementById('qqqVal').value) || 0;
-        const jepiVal = parseFloat(document.getElementById('jepiVal').value) || 0;
+        const assetAVal = parseFloat(document.getElementById('assetAVal').value) || 0;
+        const assetBVal = parseFloat(document.getElementById('assetBVal').value) || 0;
         const dcaAmount = parseFloat(document.getElementById('dcaAmount').value) || 0;
         
-        const totalVal = qqqVal + jepiVal;
+        const totalVal = assetAVal + assetBVal;
 
         if (totalVal <= 0) {
             document.getElementById('resTotalDisplay').innerText = 'ERROR';
-            document.getElementById('resQQQPctDisplay').innerText = 'N/A';
+            document.getElementById('resAssetAPctDisplay').innerText = 'N/A';
             document.getElementById('resultPanel').style.display = "none";
             alert("總資產必須大於 0 才能計算比例");
             return;
@@ -425,26 +469,25 @@
         const maxA = targetA_pct + tolerance;
         
         // 更新 UI 標籤與結果欄位
-        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K 美元)`;
-        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K 美元)`;
         document.getElementById('resAssetNameA').innerText = assetAName;
         document.getElementById('resAssetNameA_short').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
-        document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
-        document.getElementById('resTargetB').innerText = `${targetB_pct}% (±${tolerance}%)`;
+        document.getElementById('resTargetA').innerText = `${targetA_pct}%`;
+        document.getElementById('resTargetB').innerText = `${targetB_pct}%`;
 
-        const assetAPct = (qqqVal / totalVal) * 100;
+        const assetAPct = (assetAVal / totalVal) * 100;
+        const assetBPct = 100 - assetAPct;
         
         // 輸出結果格式
-        document.getElementById('resQQQVal').innerText = `${qqqVal.toFixed(2)} K 美元`;
-        document.getElementById('resQQQPct').innerText = `${assetAPct.toFixed(2)}%`;
-        document.getElementById('resJEPIVal').innerText = `${jepiVal.toFixed(2)} K 美元`;
-        document.getElementById('resJEPIPct').innerText = `${(100 - assetAPct).toFixed(2)}%`;
+        document.getElementById('resAssetAVal').innerText = `${assetAVal.toFixed(2)} K 美元`;
+        document.getElementById('resAssetAPct').innerText = `${assetAPct.toFixed(2)}%`;
+        document.getElementById('resAssetBVal').innerText = `${assetBVal.toFixed(2)} K 美元`;
+        document.getElementById('resAssetBPct').innerText = `${assetBPct.toFixed(2)}%`;
         document.getElementById('resTotal').innerText = `${totalVal.toFixed(2)} K 美元`;
 
         // 更新頂部儀表盤
         document.getElementById('resTotalDisplay').innerText = `${totalVal.toFixed(2)}`;
-        document.getElementById('resQQQPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
+        document.getElementById('resAssetAPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
 
 
         // ********** 動畫邏輯更新 **********
@@ -463,14 +506,14 @@
         
         if (assetAPct > maxA) {
             needsRebalance = true;
-            message = ` **比例警告** ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
+            message = ` **比例警告** ${assetAName} 佔比嚴重過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，建議立即再平衡。`;
             statusBox.className = "status-box status-warn";
         } else if (assetAPct < minA) {
             needsRebalance = true;
-            message = ` **比例警告** ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
+            message = ` **比例警告** ${assetAName} 佔比嚴重不足 (${assetAPct.toFixed(2)}% < ${minA}%)，建議立即再平衡。`;
             statusBox.className = "status-box status-warn";
         } else {
-            message = " **比例健康** 投資組合比例在容忍度範圍內，無需調整現有倉位。";
+            message = " **比例健康** 投資組合比例在設定容忍度範圍內。";
             statusBox.className = "status-box status-ok";
         }
         
@@ -481,7 +524,7 @@
             actionSteps.style.display = "block";
             
             const targetA = totalVal * (targetA_pct / 100);
-            const diffA = targetA - qqqVal; 
+            const diffA = targetA - assetAVal; 
             const diffB = -diffA; 
             
             const buyColor = '#000000'; 
@@ -493,10 +536,10 @@
 
             actionSteps.innerHTML = `
                 <strong>【再平衡操作】</strong><br>
-                為了達到 ${targetA_pct}/${targetB_pct} 比例，您需要執行以下倉位調整：<br>
+                為咗達到 ${targetA_pct}/${targetB_pct} 比例，你需要執行以下倉位調整：<br>
                 1. ${assetAName}: ${assetAAct}<br>
                 2. ${assetBName}: ${assetBAct}
-            `;
+                `;
         } else {
             actionSteps.style.display = "none";
         }
@@ -506,33 +549,29 @@
 
         if (dcaAmount > 0) {
             if (needsRebalance) {
-                if (assetAPct > targetA_pct) {
-                    dcaMsg = `
-                        <strong>【月供建議 - 修正】</strong><br>
-                        由於 ${assetAName} 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
-                        <br> ➡️ **${assetBName}**
-                        <br><small style="color:var(--text-secondary);">（修正目標：直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
-                    `;
-                } else if (assetAPct < targetA_pct) { 
-                     dcaMsg = `
-                        <strong>【月供建議 - 修正】</strong><br>
-                        由於 ${assetAName} 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
-                        <br> ➡️ **${assetAName}**
-                        <br><small style="color:var(--text-secondary);">（修正目標：直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
-                    `;
-                }
+                // 如果需要再平衡，月供全部投入不足的資產，以修正偏差 (DCA Rebalancing Method)
+                let underWeightAsset = (assetAPct < targetA_pct) ? assetAName : assetBName;
+                
+                // 額外檢查：如果月供能修正偏差，則建議 100% 投入
+                dcaMsg = `
+                    <strong>【月供建議 - 修正】</strong><br>
+                    由於倉位嚴重偏離目標，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
+                    <br> ➡️ **${underWeightAsset}**
+                    <br><small style="color:var(--text-secondary);">（修正目標：利用新資金逐步調整，直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
+                `;
             } else {
                 const dcaA = dcaAmount * (targetA_pct / 100);
                 const dcaB = dcaAmount * (targetB_pct / 100);
                 // 輸出結果格式：數值在前，K 美元在後
                 dcaMsg = `
                     <strong>【月供建議 - 正常】</strong><br>
-                    目前的倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
+                    目前嘅倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
                     <br> ➡️ ${assetAName} ${targetA_pct}% (${dcaA.toFixed(2)} K 美元)
                     <br> ➡️ ${assetBName} ${targetB_pct}% (${dcaB.toFixed(2)} K 美元)
                 `;
             }
         } else {
+            dcaAdvice.className = "dca-advice status-ok";
             dcaMsg = "請輸入 **「每月供款金額 (K 美元)」** 以獲取月供分配建議。";
         }
 
@@ -542,4 +581,3 @@
 
 </body>
 </html>
-
