@@ -13,7 +13,7 @@
             --text-primary: #333333;
             --text-secondary: #9AA4AE;
 
-            /* 強調色 */
+            /* 強調色 (淺藍色) */
             --highlight-color: #635AF0; 
             --highlight-light: #9A87FF; 
             --highlight-text: #FFFFFF;
@@ -64,7 +64,7 @@
             padding: 25px 30px 40px;
             border-radius: 30px; 
             box-shadow: var(--shadow-light); 
-            width: 100%;
+            width: 90%;
             max-width: 400px;
             box-sizing: border-box;
             z-index: 1;
@@ -111,7 +111,7 @@
             font-weight: 500;
         }
         .screen-display .percentage {
-             font-size: 1.4rem;
+             font-size: 1.2rem;
              color: var(--screen-text);
              font-weight: 700;
         }
@@ -383,7 +383,7 @@
     <h2>投資組合再平衡</h2>
     
     <div id="top-display" class="screen-display">
-        <span class="label">當前總資產 (K 美元) / 核心資產目標比例</span>
+        <span class="label">當前總資產 (K 美元)</span>
         <div class="main-value" id="resTotalDisplay">0.00</div>
         <div class="sub-info">
             <span>核心資產 (<span id="resAssetNameA_short">A</span>) 比例:</span> 
@@ -458,7 +458,7 @@
                     <td id="resTargetB">20%</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: 700;">總資產</td>
+                    <td style="font-weight: 700;">總值</td>
                     <td id="resTotal" colspan="3" style="font-weight: 700;">-</td>
                 </tr>
             </tbody>
