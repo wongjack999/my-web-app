@@ -3,36 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>投資組合評估</title>
+    <title>投資組合評估 - 黑白金屬儀表板</title>
     <style>
-        /* ****** 顏色與陰影變量 (全白色 Claymorphism 精確設定) ****** */
+        /* ****** 黑白 Duotone 變量 ****** */
         :root {
-            --bg-color: #F0F0F0; /* 略微偏灰，作為主體背景 */
-            --main-color: #FFFFFF; /* 卡片和主要元素顏色 */
-            --input-bg: #EBEBEB; /* 輸入框的淺凹陷背景 */
-            --text-primary: #333333;
-            --text-secondary: #777777;
+            /* 主體顏色與光暈 (黑白灰) */
+            --bg-color: #EFEFEF; /* 背景 (淺灰) */
+            --main-color: #FAFAFA; /* 主體卡片 (接近白) */
+            --metal-light: #D5D5D5; /* 淺金屬色/高光 */
+            --metal-dark: #333333; /* 深金屬色/活躍色 */
+            --text-primary: #111111;
+            --text-secondary: #666666;
 
-            /* 統一使用淺灰色陰影和白色高光來營造白色 Clay 效果 */
-            --shadow-light: 6px 6px 12px rgba(255, 255, 255, 1), -6px -6px 12px rgba(180, 180, 180, 0.5); /* 凸起陰影 */
-            --shadow-dark: 4px 4px 8px rgba(180, 180, 180, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.8); /* 凸起陰影 (用於按鈕) */
-            --inner-shadow: inset 3px 3px 6px rgba(180, 180, 180, 0.4), inset -3px -3px 6px rgba(255, 255, 255, 0.6); /* 凹陷陰影 */
-            
-            --btn-calc-color: #FF8F4A; /* 保持突出的橙色 */
-            --btn-calc-shadow: 0 8px 16px rgba(255, 143, 74, 0.4); 
-            --active-color: #3867D6; /* 保持藍色活躍狀態 */
+            /* Neumorphism 陰影 (純黑白，增加對比度模擬金屬硬朗感) */
+            --shadow-light: 5px 5px 10px rgba(0, 0, 0, 0.15), -5px -5px 10px rgba(255, 255, 255, 1);
+            --shadow-dark: 3px 3px 6px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.8);
+            --inner-shadow-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.3), inset -3px -3px 6px rgba(255, 255, 255, 0.1); /* 深凹陷 */
 
-            /* 狀態卡片背景顏色全部使用白色，並調整文字顏色以保持可讀性 */
-            --success-color: #FFFFFF; 
-            --warning-color: #FFFFFF; 
-            --info-color: #FFFFFF;
-            --action-color: #FFFFFF; 
-            
-            /* 狀態文字顏色保持不變 */
-            --success-text: #38a169;
-            --warning-text: #e53e3e;
-            --info-text: #3867D6;
-            --action-text: #dd6b20;
+            /* LCD 顯示屏顏色 (黑底白字) */
+            --screen-bg: #1A1A1A; /* 深黑 */
+            --screen-text: #FFFFFF; /* 純白高亮數字 */
+            --screen-label: #AAAAAA; /* 淺灰標籤 */
+
+            /* 按鈕與活躍色 (僅使用黑灰) */
+            --btn-control-color: #E0E0E0;
+            --btn-calc-color: var(--metal-dark); /* 計算按鈕使用深黑金屬色 */
+            --btn-calc-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            --active-color: #555555; /* 比例活躍狀態 (中灰) */
         }
 
         body {
@@ -44,92 +41,132 @@
             margin: 0;
             padding: 0;
             color: var(--text-primary);
-        }
-
-        /* ************************************************* */
-        /* ****** 主要修改部分：全寬度手機適配與取消外框 ****** */
-        /* ************************************************* */
-        .container {
-            background: var(--main-color); /* 主體背景設為純白 */
-            padding: 30px 25px;
-            border-radius: 0;
-            box-shadow: none; /* 容器無陰影 */
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        /* ************************************************* */
-        
-        h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: var(--text-primary);
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            overflow-x: hidden;
         }
 
         /* ------------------------------------- */
-        /* 輸入框風格 (凹陷設計) */
+        /* 主容器與外框模擬 (硬朗金屬外殼) */
+        /* ------------------------------------- */
+        .container {
+            background: var(--main-color);
+            padding: 20px 25px 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light); 
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+            border: 1px solid var(--metal-light); /* 增加硬朗邊框 */
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        
+        /* ------------------------------------- */
+        /* LCD 儀表顯示區 (頂部 - 黑底白字) */
+        /* ------------------------------------- */
+        .screen-display {
+            background-color: var(--screen-bg);
+            color: var(--screen-text);
+            padding: 20px 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+            font-family: monospace;
+            text-align: center;
+            border: 1px solid #000;
+        }
+        .screen-display .main-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 0 0 5px 0;
+            color: var(--screen-text);
+        }
+        .screen-display .label {
+            font-size: 0.85rem;
+            color: var(--screen-label);
+            display: block;
+        }
+        .screen-display .sub-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--screen-label);
+        }
+        .screen-display .percentage {
+             font-size: 1.2rem;
+             color: var(--screen-text); 
+             font-weight: bold;
+        }
+
+        /* ------------------------------------- */
+        /* 輸入框風格 (淺凹槽) */
         /* ------------------------------------- */
         input[type="number"], input[type="text"] {
             width: 100%;
             padding: 12px 15px;
             border: none;
-            border-radius: 18px;
+            border-radius: 10px;
             font-size: 1rem;
-            background-color: var(--input-bg); /* 使用淺灰作為凹陷背景 */
+            background-color: var(--main-color);
             box-sizing: border-box;
             outline: none;
-            box-shadow: var(--inner-shadow); /* 使用內陰影創造凹陷感 */
+            box-shadow: var(--inner-shadow-dark); /* 深色凹槽，對比強烈 */
             transition: all 0.3s ease; 
             color: var(--text-primary);
             margin-bottom: 20px;
         }
         input[type="number"]:focus, input[type="text"]:focus {
-            background-color: #E0E0E0; /* 略深一點的凹陷效果 */
-            transform: scale(1.01); 
+            background-color: var(--metal-light);
         }
 
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
         /* ------------------------------------- */
-        /* 比例選擇按鈕 (凸起/凹陷狀態) */
+        /* 比例選擇按鈕 (凸起金屬按鈕) */
         /* ------------------------------------- */
         .config-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr); 
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 25px;
         }
         .config-buttons button {
-            padding: 14px 10px;
+            padding: 12px 10px;
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease; 
+            transition: all 0.2s ease; 
             color: var(--text-primary);
-            background: var(--main-color); /* 純白背景 */
-            box-shadow: var(--shadow-dark); /* 淺色凸起陰影 */
+            background: var(--btn-control-color); 
+            box-shadow: var(--shadow-dark); 
+            border: 1px solid var(--metal-light);
         }
-        .config-buttons button:hover:not(.active) {
-            transform: translateY(-2px); 
-            box-shadow: 4px 4px 8px rgba(180, 180, 180, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.9);
-        }
-        /* 激活狀態：深色凹陷 (保留顏色以區分) */
+        /* 激活狀態：深色凹陷 (中灰) */
         .config-buttons button.active {
             background-color: var(--active-color);
             color: white;
-            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.2); 
-            transform: scale(1.0);
+            box-shadow: var(--inner-shadow-dark); 
+            transform: scale(0.98);
         }
         
         /* ------------------------------------- */
-        /* 主要計算按鈕 (糖果橙 3D 質感) */
+        /* 主要計算按鈕 (深黑金屬控制鍵) */
         /* ------------------------------------- */
         button#calculate-btn {
             width: 100%;
@@ -137,103 +174,115 @@
             background-color: var(--btn-calc-color); 
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 15px;
             font-size: 1.2rem;
             font-weight: 800;
             cursor: pointer;
             margin-top: 25px;
             box-shadow: var(--btn-calc-shadow); 
             transition: all 0.2s ease;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-        }
-        button#calculate-btn:hover {
-            opacity: 0.95;
-            box-shadow: 0 10px 20px rgba(255, 143, 74, 0.6); 
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
         }
         button#calculate-btn:active {
-            box-shadow: 0 3px 10px rgba(255, 143, 74, 0.6); 
-            transform: translateY(3px); 
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4), var(--inner-shadow-dark); 
+            transform: translateY(2px); 
         }
 
         /* ------------------------------------- */
-        /* 結果展示 (卡片風格更新為白色 Clay) */
+        /* 結果展示 (表格與卡片) */
         /* ------------------------------------- */
-        @keyframes fadeInSlide {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
         .result-panel {
             margin-top: 35px;
             padding-top: 20px;
-            border-top: 1px solid rgba(180, 180, 180, 0.3);
+            border-top: 1px solid var(--metal-light);
             display: none; 
             animation: fadeInSlide 0.6s ease-out forwards; 
         }
-        
-        /* 狀態/建議卡片風格 (全部白色，用深色邊框和文字顏色區分) */
-        .status-box, .action-steps, .dca-advice {
-            transition: box-shadow 0.3s ease;
-            border: 1px solid #E0E0E0; /* 增加淺色邊框以在白色背景上區分 */
-            border-radius: 20px;
-            margin-top: 15px;
-            padding: 20px;
-            font-weight: 600;
-            background-color: var(--main-color); /* 純白背景 */
-            box-shadow: var(--shadow-dark); /* 凸起效果 */
-        }
-        .status-ok { color: var(--success-text); border-left: 5px solid var(--success-text); }
-        .status-warn { color: var(--warning-text); border-left: 5px solid var(--warning-text); }
-        .action-steps { color: var(--info-text); border-left: 5px solid var(--info-text); }
-        .dca-advice { color: var(--action-text); border-left: 5px solid var(--action-text); }
-
-
-        /* ------------------------------------- */
-        /* 其餘靜態樣式保持不變 */
-        /* ------------------------------------- */
 
         .summary-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
-            border-radius: 20px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: var(--shadow-dark); /* 表格整體凸起 */
+            box-shadow: var(--shadow-dark); 
+            background-color: var(--main-color);
         }
         .summary-table th, .summary-table td {
             text-align: left;
-            padding: 15px;
+            padding: 12px;
             font-size: 0.95rem;
             background-color: var(--main-color);
-            border-bottom: 1px solid var(--input-bg);
+            border-bottom: 1px solid var(--metal-light);
         }
         .summary-table th {
-            background-color: var(--input-bg); /* 表頭使用淺灰，略微區分 */
+            background-color: var(--btn-control-color);
             color: var(--text-primary);
+            font-weight: 600;
         }
         
-        /* 手機上兩欄輸入保持 */
+        /* 結果卡片 (模擬狀態燈 - 僅用黑白灰) */
+        .status-box, .action-steps, .dca-advice {
+            transition: box-shadow 0.3s ease;
+            border-radius: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            font-weight: 500;
+            background-color: var(--main-color);
+            box-shadow: var(--shadow-dark); 
+            border: 1px solid var(--metal-light);
+            font-size: 0.95rem;
+        }
+        .status-box strong, .dca-advice strong {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        /* 狀態顏色 (用深色邊框和強烈文字顏色區分) */
+        .status-ok { 
+            color: #111111; 
+            border-left: 5px solid #000000; /* 純黑邊框 */
+        }
+        .status-warn { 
+            color: #CC0000; /* 保留警告色為深紅色，作為唯一的非灰/黑/白突出色 */
+            border-left: 5px solid #CC0000; 
+        }
+        .action-steps { 
+            color: #000000; 
+            border-left: 5px solid #666666;
+        }
+        .dca-advice { 
+            color: #333333; 
+            border-left: 5px solid #333333;
+        }
+        
         .asset-config-row { display: flex; gap: 15px; }
         .asset-config-row > div { flex: 1; }
-        
-        /* 針對 label 與 input 的間距調整 */
-        .input-group { margin-bottom: 5px; } 
-
         .note { font-size: 0.8rem; color: var(--text-secondary); margin-top: 30px; text-align: center; }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>投資組合評估</h2>
+    <h2>投資組合再平衡儀表</h2>
     
+    <div id="top-display" class="screen-display">
+        <span class="label">當前總資產 (K 美元) / 目標比例</span>
+        <div class="main-value" id="resTotalDisplay">0.00</div>
+        <div class="sub-info">
+            <span>核心資產 (<span id="resAssetNameA_short">A</span>) 比例:</span> 
+            <span class="percentage" id="resQQQPctDisplay">0.00%</span>
+        </div>
+    </div>
+
     <div class="input-group">
-        <label>設定目標比例</label>
+        <label>設定目標比例 (核心 / 衛星)</label>
         <div class="config-buttons">
             <button id="btn-80-20" class="active" onclick="setTarget(80, 20)">80% / 20%</button>
             <button id="btn-70-30" onclick="setTarget(70, 30)">70% / 30%</button>
@@ -241,15 +290,15 @@
             <button id="btn-50-50" onclick="setTarget(50, 50)">50% / 50%</button>
         </div>
     </div>
-
+    
     <div class="asset-config-row">
         <div class="input-group">
-            <label for="assetAName">核心資產:</label>
+            <label for="assetAName">核心資產名稱:</label>
             <input type="text" id="assetAName" value="QQQ" placeholder="例如: VOO, QQQ">
         </div>
         <div class="input-group">
-            <label for="assetBName">衛星資產:</label>
-            <input type="text" id="assetBName" placeholder="請輸入 (例如: BND, JEPI)">
+            <label for="assetBName">衛星資產名稱:</label>
+            <input type="text" id="assetBName" value="BND" placeholder="例如: BND, JEPI">
         </div>
     </div>
 
@@ -264,7 +313,7 @@
             <input type="number" id="qqqVal" placeholder="例如: 8.50">
         </div>
         <div class="input-group">
-            <label id="assetBLabel" for="jepiVal">請輸入 當前市值 (K 美元)</label>
+            <label id="assetBLabel" for="jepiVal">BND 當前市值 (K 美元)</label>
             <input type="number" id="jepiVal" placeholder="例如: 1.50">
         </div>
     </div>
@@ -274,7 +323,7 @@
         <input type="number" id="dcaAmount" placeholder="例如: 0.50 (即 $500)">
     </div>
 
-    <button id="calculate-btn" onclick="calculate()">執行計算與評估</button>
+    <button id="calculate-btn" onclick="calculate()">執行評估</button>
 
     <div id="resultPanel" class="result-panel">
         <h3 style="font-size: 1.3rem; margin-top: 0; color: var(--text-primary);">組合狀況概要</h3>
@@ -291,19 +340,19 @@
             <tbody>
                 <tr>
                     <td id="resAssetNameA">QQQ</td>
-                    <td id="resQQQVal" class="highlight">-</td>
+                    <td id="resQQQVal">-</td>
                     <td id="resQQQPct">-</td>
                     <td id="resTargetA">80% (±5%)</td>
                 </tr>
                 <tr>
-                    <td id="resAssetNameB">請輸入</td>
-                    <td id="resJEPIVal" class="highlight">-</td>
+                    <td id="resAssetNameB">BND</td>
+                    <td id="resJEPIVal">-</td>
                     <td id="resJEPIPct">-</td>
                     <td id="resTargetB">20% (±5%)</td>
                 </tr>
                 <tr>
-                    <td class="highlight">總資產</td>
-                    <td id="resTotal" class="highlight" colspan="3">-</td>
+                    <td style="font-weight: 700;">總資產</td>
+                    <td id="resTotal" colspan="3" style="font-weight: 700;">-</td>
                 </tr>
             </tbody>
         </table>
@@ -336,7 +385,18 @@
     }
     
     document.addEventListener('DOMContentLoaded', () => {
+        // 初始設定資產名稱
+        const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
+        const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
+        document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K 美元)`;
+        document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K 美元)`;
+        document.getElementById('resAssetNameA_short').innerText = assetAName;
+        document.getElementById('resAssetNameB').innerText = assetBName;
+        
         setTarget(80, 20);
+        // 確保頂部顯示區有初始值
+        document.getElementById('resTotalDisplay').innerText = '0.00';
+        document.getElementById('resQQQPctDisplay').innerText = '0.00%';
     });
 
     function calculate() {
@@ -351,6 +411,9 @@
         const totalVal = qqqVal + jepiVal;
 
         if (totalVal <= 0) {
+            document.getElementById('resTotalDisplay').innerText = 'ERROR';
+            document.getElementById('resQQQPctDisplay').innerText = 'N/A';
+            document.getElementById('resultPanel').style.display = "none";
             alert("總資產必須大於 0 才能計算比例");
             return;
         }
@@ -358,21 +421,28 @@
         const minA = targetA_pct - tolerance;
         const maxA = targetA_pct + tolerance;
         
+        // 更新 UI 標籤與結果欄位
         document.getElementById('assetALabel').innerText = `${assetAName} 當前市值 (K 美元)`;
         document.getElementById('assetBLabel').innerText = `${assetBName} 當前市值 (K 美元)`;
         document.getElementById('resAssetNameA').innerText = assetAName;
+        document.getElementById('resAssetNameA_short').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
         document.getElementById('resTargetA').innerText = `${targetA_pct}% (±${tolerance}%)`;
         document.getElementById('resTargetB').innerText = `${targetB_pct}% (±${tolerance}%)`;
 
         const assetAPct = (qqqVal / totalVal) * 100;
         
-        // 輸出結果格式：數值在前，K 美元在後
+        // 輸出結果格式
         document.getElementById('resQQQVal').innerText = `${qqqVal.toFixed(2)} K 美元`;
         document.getElementById('resQQQPct').innerText = `${assetAPct.toFixed(2)}%`;
         document.getElementById('resJEPIVal').innerText = `${jepiVal.toFixed(2)} K 美元`;
         document.getElementById('resJEPIPct').innerText = `${(100 - assetAPct).toFixed(2)}%`;
         document.getElementById('resTotal').innerText = `${totalVal.toFixed(2)} K 美元`;
+
+        // 更新頂部儀表盤
+        document.getElementById('resTotalDisplay').innerText = `${totalVal.toFixed(2)}`;
+        document.getElementById('resQQQPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
+
 
         // ********** 動畫邏輯更新 **********
         const resultPanel = document.getElementById('resultPanel');
@@ -390,18 +460,18 @@
         
         if (assetAPct > maxA) {
             needsRebalance = true;
-            message = ` ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
+            message = ` **比例警告** ${assetAName} 佔比過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，已達到觸發點。`;
             statusBox.className = "status-box status-warn";
         } else if (assetAPct < minA) {
             needsRebalance = true;
-            message = ` ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
+            message = ` **比例警告** ${assetAName} 佔比過低 (${assetAPct.toFixed(2)}% < ${minA}%)，已達到觸發點。`;
             statusBox.className = "status-box status-warn";
         } else {
-            message = " 投資組合比例健康，無需調整現有倉位。";
+            message = " **比例健康** 投資組合比例在容忍度範圍內，無需調整現有倉位。";
             statusBox.className = "status-box status-ok";
         }
         
-        statusBox.innerText = message.trim(); 
+        statusBox.innerHTML = message.trim(); 
 
         // --- 傳統再平衡建議 ---
         if (needsRebalance) {
@@ -411,16 +481,16 @@
             const diffA = targetA - qqqVal; 
             const diffB = -diffA; 
             
-            const buyColor = 'var(--active-color)'; 
-            const sellColor = '#c53030'; 
+            const buyColor = '#000000'; 
+            const sellColor = '#CC0000'; 
 
             // 輸出結果格式：數值在前，K 美元在後
-            const assetAAct = diffA > 0 ? `<span style="color:${buyColor}">買入 ${Math.abs(diffA).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}">賣出 ${Math.abs(diffA).toFixed(2)} K 美元</span>`;
-            const assetBAct = diffB > 0 ? `<span style="color:${buyColor}">買入 ${Math.abs(diffB).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}">賣出 ${Math.abs(diffB).toFixed(2)} K 美元</span>`;
+            const assetAAct = diffA > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffA).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffA).toFixed(2)} K 美元</span>`;
+            const assetBAct = diffB > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffB).toFixed(2)} K 美元</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffB).toFixed(2)} K 美元</span>`;
 
             actionSteps.innerHTML = `
-                <strong>傳統再平衡建議 (倉位調整)：</strong><br>
-                為了達到 ${targetA_pct}/${targetB_pct} 比例，您需要執行以下操作：<br>
+                <strong>【再平衡操作】</strong><br>
+                為了達到 ${targetA_pct}/${targetB_pct} 比例，您需要執行以下倉位調整：<br>
                 1. ${assetAName}: ${assetAAct}<br>
                 2. ${assetBName}: ${assetBAct}
             `;
@@ -435,17 +505,17 @@
             if (needsRebalance) {
                 if (assetAPct > targetA_pct) {
                     dcaMsg = `
-                        <strong>月供建議 (修正模式)：</strong><br>
+                        <strong>【月供建議 - 修正】</strong><br>
                         由於 ${assetAName} 嚴重超重，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
                         <br> ➡️ **${assetBName}**
-                        <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
+                        <br><small style="color:var(--text-secondary);">（修正目標：直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
                     `;
                 } else if (assetAPct < targetA_pct) { 
                      dcaMsg = `
-                        <strong>月供建議 (修正模式)：</strong><br>
+                        <strong>【月供建議 - 修正】</strong><br>
                         由於 ${assetAName} 嚴重不足，建議將 **100%** (${dcaAmount.toFixed(2)} K 美元) 的月供全部投入：
                         <br> ➡️ **${assetAName}**
-                        <br><small>直至整體組合比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。</small>
+                        <br><small style="color:var(--text-secondary);">（修正目標：直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
                     `;
                 }
             } else {
@@ -453,14 +523,14 @@
                 const dcaB = dcaAmount * (targetB_pct / 100);
                 // 輸出結果格式：數值在前，K 美元在後
                 dcaMsg = `
-                    <strong>月供建議 (正常模式)：</strong><br>
+                    <strong>【月供建議 - 正常】</strong><br>
                     目前的倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
                     <br> ➡️ ${assetAName} ${targetA_pct}% (${dcaA.toFixed(2)} K 美元)
                     <br> ➡️ ${assetBName} ${targetB_pct}% (${dcaB.toFixed(2)} K 美元)
                 `;
             }
         } else {
-            dcaMsg = "請輸入「每月供款金額 (K 美元)」以獲取月供分配建議。";
+            dcaMsg = "請輸入 **「每月供款金額 (K 美元)」** 以獲取月供分配建議。";
         }
 
         dcaAdvice.innerHTML = dcaMsg;
