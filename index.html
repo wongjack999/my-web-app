@@ -97,10 +97,11 @@
             color: var(--screen-text);
         }
         .screen-display .label {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--screen-label);
             display: block;
             margin-bottom: 15px;
+            font-weight: 500;
         }
         .screen-display .sub-info {
             display: flex;
@@ -644,7 +645,7 @@
                 dcaMsg = `
                     <strong>【月供建議 - 修正】</strong><br>
                     由於倉位嚴重偏離目標，建議將 **100%** (${dcaAmount.toFixed(2)} K USD) 的月供全部投入：
-                    <br> ➡️ **${underWeightAsset}**
+                    <br> - **${underWeightAsset}**
                     <br><small style="color:var(--text-secondary);">（修正目標：利用新資金逐步調整，直至整體比例回到 ${targetA_pct}/${targetB_pct} 範圍為止。）</small>
                 `;
             } else {
@@ -656,8 +657,8 @@
                 dcaMsg = `
                     <strong>【月供建議 - 正常】</strong><br>
                     目前嘅倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
-                    <br> ➡️ ${assetAName} ${targetA_pct}% (${dcaA.toFixed(2)} K USD)
-                    <br> ➡️ ${assetBName} ${targetB_pct}% (${dcaB.toFixed(2)} K USD)
+                    <br> - ${assetAName} ${targetA_pct}% (${dcaA.toFixed(2)} K USD)
+                    <br> - ${assetBName} ${targetB_pct}% (${dcaB.toFixed(2)} K USD)
                 `;
             }
         } else {
