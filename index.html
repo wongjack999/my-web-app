@@ -3,32 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rebalance - App Flow</title>
+    <title>Rebalance</title>
     <style>
-        /* ****** 輕柔 Neumorphism 變量 (保持不變) ****** */
+        /* ****** 輕柔 Neumorphism 變量 (Soft White & Blue Highlight) ****** */
         :root {
+            /* 主體顏色與光暈 (柔和白) */
             --bg-color: #ECF0F3; 
             --main-color: #ECF0F3; 
             --text-primary: #333333;
             --text-secondary: #9AA4AE;
+
+            /* 強調色 (淺藍色) */
             --highlight-color: #635AF0; 
             --highlight-light: #9A87FF; 
             --highlight-text: #FFFFFF;
+
+            /* Neumorphism 陰影 (柔和光暈感) */
             --shadow-light: 10px 10px 20px rgba(174, 174, 192, 0.4), -10px -10px 20px #FFFFFF;
             --shadow-small: 5px 5px 10px rgba(174, 174, 192, 0.3), -5px -5px 10px #FFFFFF;
             --inner-shadow-light: inset 5px 5px 10px rgba(174, 174, 192, 0.4), inset -5px -5px 10px #FFFFFF;
+
+            /* Slider 陰影 */
             --thumb-shadow: 0 5px 15px rgba(174, 174, 192, 0.6), -5px -5px 10px #FFFFFF; 
+
+            /* LCD 顯示屏 */
             --screen-bg: #F0F4F7; 
             --screen-text: var(--highlight-color); 
             --screen-label: var(--text-secondary); 
+
+            /* 按鈕與活躍色 */
             --btn-control-color: var(--main-color);
             --btn-calc-color: var(--highlight-color); 
             --btn-calc-shadow: 0 5px 15px rgba(76, 114, 176, 0.4); 
             --active-color: var(--highlight-light); 
+            
+            /* 狀態顏色 */
             --status-ok-border: var(--highlight-color);
             --status-warn-border: #CC0000;
             --action-border: #9AA4AE;
             --dca-border: var(--highlight-color);
+
+            /* Slider 顏色 */
             --slider-thumb-size: 24px;
         }
 
@@ -62,43 +77,7 @@
             color: var(--text-primary);
             text-align: center;
         }
-
-        /* ------------------------------------- */
-        /* 頁面切換效果 (App-like) */
-        /* ------------------------------------- */
-        .step-panel {
-            /* 保持容器隱藏/顯示的樣式 */
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            width: 100%;
-        }
-
-        /* 初始狀態，結果頁隱藏 */
-        .step-panel-hidden {
-            display: none;
-            opacity: 0;
-            transform: translateX(100%); /* 模擬向右滑出/隱藏 */
-            position: absolute; 
-            top: 0; 
-            left: 0;
-            padding: inherit;
-        }
         
-        .step-panel-visible {
-            display: block;
-            opacity: 1;
-            transform: translateX(0);
-            position: relative;
-        }
-        
-        /* 覆蓋容器，確保 Step 2 隱藏時不會干擾 Step 1 佈局 */
-        .container {
-            position: relative; 
-            min-height: 600px; /* 設置最小高度以防止跳動 */
-        }
-        
-        /* ------------------------------------- */
-        /* 頂部顯示器 (保持不變) */
-        /* ------------------------------------- */
         .screen-display {
             background-color: var(--screen-bg);
             color: var(--screen-text);
@@ -138,7 +117,7 @@
         }
 
         /* ------------------------------------- */
-        /* 輸入控制項 (保持不變) */
+        /* 輸入框組件 (資產名稱與市值) */
         /* ------------------------------------- */
         .input-item label, .input-group label {
             display: block;
@@ -185,6 +164,10 @@
             color: var(--highlight-color);
         }
         
+        /* ------------------------------------- */
+        /* 月供滑桿 (Slider) 樣式 */
+        /* ------------------------------------- */
+
         .slider-group {
             margin-bottom: 25px;
             text-align: center;
@@ -206,6 +189,7 @@
             margin: 10px 0;
         }
 
+        /* 軌道 Track (凹陷效果) */
         input[type="range"]::-webkit-slider-runnable-track {
             height: 10px;
             border-radius: 5px;
@@ -213,6 +197,15 @@
             box-shadow: var(--inner-shadow-light); 
             border: none;
         }
+        input[type="range"]::-moz-range-track {
+            height: 10px;
+            border-radius: 5px;
+            background: var(--main-color);
+            box-shadow: var(--inner-shadow-light); 
+            border: none;
+        }
+
+        /* 圓形控制點 Thumb (純白 + 加強陰影) */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: var(--slider-thumb-size);
@@ -224,11 +217,29 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
+        /* 按下時 (Active state) - 凹陷效果 */
         input[type="range"]:active::-webkit-slider-thumb {
             box-shadow: var(--inner-shadow-light); 
             transform: scale(0.95);
         }
-        
+
+        /* Firefox 兼容性設置 - 已修正 Bug */
+        input[type="range"]::-moz-range-thumb {
+            height: var(--slider-thumb-size);
+            width: var(--slider-thumb-size);
+            border-radius: 50%;
+            background: var(--main-color);
+            box-shadow: var(--thumb-shadow); 
+            cursor: pointer;
+            border: none; 
+            /* *** 修正點 1: 新增 margin-top 確保居中 *** */
+            margin-top: calc((var(--slider-thumb-size) - 10px) / -2); 
+        }
+
+        /* ------------------------------------- */
+        /* 主要計算按鈕 */
+        /* ------------------------------------- */
         .config-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr); 
@@ -254,54 +265,37 @@
             transform: scale(0.98);
         }
         
-        /* ------------------------------------- */
-        /* 導航按鈕 (下一步/返回) */
-        /* ------------------------------------- */
-        .navigation-buttons {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .navigation-buttons button {
+        button#calculate-btn {
+            width: 100%;
             padding: 20px;
+            background-color: var(--btn-calc-color);
+            color: var(--highlight-text);
             border: none;
             border-radius: 20px;
             font-size: 1.2rem;
             font-weight: 800;
             cursor: pointer;
+            margin-top: 25px;
+            box-shadow: var(--btn-calc-shadow);
             transition: all 0.2s ease;
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-            flex-grow: 1; 
         }
-
-        #next-step-btn {
-            background-color: var(--btn-calc-color);
-            color: var(--highlight-text);
-            box-shadow: var(--btn-calc-shadow);
-        }
-        #next-step-btn:active {
+        button#calculate-btn:active {
             box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.3), inset -3px -3px 7px var(--highlight-light);
             transform: translateY(1px);
         }
 
-        #reset-btn {
-            background-color: var(--btn-control-color);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-small);
-            flex-grow: 0;
-            min-width: 100px;
-        }
-        #reset-btn:active {
-            box-shadow: var(--inner-shadow-light); 
-            transform: scale(0.98);
+        /* ------------------------------------- */
+        /* 結果展示 (卡片與表格) - 圓角修正區域 */
+        /* ------------------------------------- */
+        .result-panel {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #D9DEE3;
+            display: none; 
+            animation: fadeInSlide 0.6s ease-out forwards; 
         }
 
-
-        /* ------------------------------------- */
-        /* 結果展示 (保持不變) */
-        /* ------------------------------------- */
         .summary-table {
             border-collapse: separate; 
             border-spacing: 0; 
@@ -310,7 +304,6 @@
             box-shadow: var(--shadow-small);
             background-color: var(--main-color);
             overflow: hidden; 
-            margin-bottom: 20px;
         }
         .summary-table th, .summary-table td {
             text-align: left;
@@ -326,15 +319,28 @@
             font-weight: 600;
         }
 
-        .summary-table thead tr:first-child th:first-child { border-top-left-radius: 20px; }
-        .summary-table thead tr:first-child th:last-child { border-top-right-radius: 20px; }
-        .summary-table tbody tr:last-child td { border-bottom: none; }
-        .summary-table tbody tr:last-child td:first-child { border-bottom-left-radius: 20px; }
-        .summary-table tbody tr:last-child td:last-child { border-bottom-right-radius: 20px; }
+        /* 處理邊角圓角 */
+        .summary-table thead tr:first-child th:first-child {
+            border-top-left-radius: 20px;
+        }
+        .summary-table thead tr:first-child th:last-child {
+            border-top-right-radius: 20px;
+        }
+
+        /* 確保表格尾部單元格沒有底邊線，並帶有圓角 */
+        .summary-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .summary-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 20px;
+        }
+        .summary-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 20px;
+        }
         
         .status-box, .action-steps, .dca-advice {
             border-radius: 15px;
-            margin-top: 15px;
+            margin-top: 20px;
             padding: 18px;
             font-weight: 500;
             background-color: var(--main-color);
@@ -349,77 +355,82 @@
             color: var(--text-primary);
         }
         
-        .status-ok { border-left: 6px solid var(--status-ok-border); }
+        .status-ok { 
+            border-left: 6px solid var(--status-ok-border);
+        }
         .status-warn { 
             color: var(--status-warn-border);
             border-left: 6px solid var(--status-warn-border); 
         }
-        .action-steps { border-left: 6px solid var(--action-border); }
-        .dca-advice { border-left: 6px solid var(--dca-border); }
+        .action-steps { 
+            border-left: 6px solid var(--action-border);
+        }
+        .dca-advice { 
+            border-left: 6px solid var(--dca-border);
+        }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 id="pageTitle">投資組合再平衡 (步驟 1/2)</h2>
+    <h2>投資組合再平衡</h2>
     
-    <div id="step-1-input" class="step-panel step-panel-visible">
-        
-        <div id="top-display" class="screen-display">
-            <span class="label">當前總資產 (K 美元)</span>
-            <div class="main-value" id="resTotalDisplay">0.00</div>
-            <div class="sub-info">
-                <span>核心資產 (<span id="resAssetNameA_short">A</span>) 比例:</span> 
-                <span class="percentage" id="resAssetAPctDisplay">0.00%</span>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>設定目標比例 (核心 / 衛星)</label>
-            <div class="config-buttons">
-                <button id="btn-80-20" onclick="setTarget(80, 20);">80% / 20%</button>
-                <button id="btn-70-30" onclick="setTarget(70, 30);">70% / 30%</button>
-                <button id="btn-60-40" onclick="setTarget(60, 40);">60% / 40%</button>
-                <button id="btn-50-50" onclick="setTarget(50, 50);">50% / 50%</button>
-            </div>
-        </div>
-        
-        <div class="input-item">
-            <label for="assetAName">核心資產名稱與市值 (K 美元)</label>
-            <div class="asset-input">
-                <input type="text" id="assetAName" value="QQQ" placeholder="資產代號" oninput="updateInputs()">
-                <input type="number" id="assetAVal" value="8.50" placeholder="市值" oninput="updateInputs()">
-            </div>
-        </div>
-
-        <div class="input-item">
-            <label for="assetBName">衛星資產名稱與市值 (K 美元)</label>
-            <div class="asset-input">
-                <input type="text" id="assetBName" value="BND" placeholder="資產代號" oninput="updateInputs()">
-                <input type="number" id="assetBVal" value="1.50" placeholder="市值" oninput="updateInputs()">
-            </div>
-        </div>
-
-        <div class="input-group slider-group">
-            <label for="dcaAmountSlider">每月供款金額 (K 美元)</label>
-            <span id="dcaAmountDisplay" class="dca-value-display">0.50 K USD</span> 
-            <input 
-                type="range" 
-                id="dcaAmountSlider" 
-                min="0" 
-                max="10" 
-                step="0.05" 
-                value="0.50" 
-                oninput="updateDCA(this.value);"
-            >
-        </div>
-        
-        <div class="navigation-buttons">
-            <button id="next-step-btn" onclick="calculateAndGoToStep2()">下一頁 (評估)</button>
+    <div id="top-display" class="screen-display">
+        <span class="label">當前總資產 (K 美元)</span>
+        <div class="main-value" id="resTotalDisplay">0.00</div>
+        <div class="sub-info">
+            <span>核心資產 (<span id="resAssetNameA_short">A</span>) 比例:</span> 
+            <span class="percentage" id="resAssetAPctDisplay">0.00%</span>
         </div>
     </div>
 
-    <div id="step-2-result" class="step-panel step-panel-hidden">
+    <div class="input-group">
+        <label>設定目標比例 (核心 / 衛星)</label>
+        <div class="config-buttons">
+            <button id="btn-80-20" onclick="setTarget(80, 20); calculate();">80% / 20%</button>
+            <button id="btn-70-30" onclick="setTarget(70, 30); calculate();">70% / 30%</button>
+            <button id="btn-60-40" onclick="setTarget(60, 40); calculate();">60% / 40%</button>
+            <button id="btn-50-50" onclick="setTarget(50, 50); calculate();">50% / 50%</button>
+        </div>
+    </div>
+    
+    <div class="input-item">
+        <label for="assetAName">核心資產名稱與市值 (K 美元)</label>
+        <div class="asset-input">
+            <input type="text" id="assetAName" value="QQQ" placeholder="資產代號" oninput="calculate()">
+            <input type="number" id="assetAVal" value="8.50" placeholder="市值" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="input-item">
+        <label for="assetBName">衛星資產名稱與市值 (K 美元)</label>
+        <div class="asset-input">
+            <input type="text" id="assetBName" value="BND" placeholder="資產代號" oninput="calculate()">
+            <input type="number" id="assetBVal" value="1.50" placeholder="市值" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="input-group slider-group">
+        <label for="dcaAmountSlider">每月供款金額 (K 美元)</label>
+        <span id="dcaAmountDisplay" class="dca-value-display">0.50 K USD</span> 
+        <input 
+            type="range" 
+            id="dcaAmountSlider" 
+            min="0" 
+            max="10" 
+            step="0.05" 
+            value="0.50" 
+            oninput="updateDCA(this.value); calculate();"
+        >
+    </div>
+    <button id="calculate-btn" onclick="calculate()">執行評估</button>
+
+    <div id="resultPanel" class="result-panel">
         <h3 style="font-size: 1.3rem; margin-top: 0; color: var(--text-primary);">組合狀況概要</h3>
 
         <table class="summary-table">
@@ -454,10 +465,6 @@
         <div id="statusBox" class="status-box"></div>
         <div id="actionSteps" class="action-steps" style="display:none;"></div>
         <div id="dcaAdvice" class="dca-advice"></div>
-        
-        <div class="navigation-buttons">
-            <button id="reset-btn" onclick="goToStep(1)">返回重置</button>
-        </div>
     </div>
     
 </div>
@@ -467,87 +474,49 @@
     let targetB_pct = 20;
     const REBALANCE_TOLERANCE = 5; 
 
-    // --- 流程控制函數 ---
-    function goToStep(stepNum) {
-        const step1 = document.getElementById('step-1-input');
-        const step2 = document.getElementById('step-2-result');
-        const title = document.getElementById('pageTitle');
-        const container = document.querySelector('.container');
-
-        if (stepNum === 1) {
-            // 轉到 Step 1: 輸入頁
-            title.innerText = '投資組合再平衡 (步驟 1/2)';
-            step2.classList.remove('step-panel-visible');
-            step2.classList.add('step-panel-hidden');
-            
-            // 使用 setTimeout 確保動畫先完成再切換顯示
-            setTimeout(() => {
-                step1.classList.remove('step-panel-hidden');
-                step1.classList.add('step-panel-visible');
-            }, 50); // 短暫延遲
-            
-        } else if (stepNum === 2) {
-             // 轉到 Step 2: 結果頁
-            title.innerText = '評估結果 (步驟 2/2)';
-            step1.classList.remove('step-panel-visible');
-            step1.classList.add('step-panel-hidden');
-            
-            setTimeout(() => {
-                step2.classList.remove('step-panel-hidden');
-                step2.classList.add('step-panel-visible');
-            }, 50); 
-        }
-        // 確保視圖捲動到頂部
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    // --- 輸入/顯示更新函數 ---
-    function updateInputs() {
-        const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
-        const assetAVal = parseFloat(document.getElementById('assetAVal').value) || 0;
-        const assetBVal = parseFloat(document.getElementById('assetBVal').value) || 0;
-        const totalVal = assetAVal + assetBVal;
-        const assetAPct = (totalVal > 0) ? (assetAVal / totalVal) * 100 : 0;
-
-        // 更新頂部顯示與標籤 (Step 1)
-        document.getElementById('resAssetNameA_short').innerText = assetAName;
-        document.getElementById('resTotalDisplay').innerText = totalVal.toFixed(2);
-        document.getElementById('resAssetAPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
-    }
-
-    // 滑桿數值實時更新
+    // 滑桿數值實時更新，並觸發計算
     function updateDCA(value) {
         document.getElementById('dcaAmountDisplay').innerText = `${parseFloat(value).toFixed(2)} K USD`;
     }
 
-    // 目標比例設置
     function setTarget(A, B) {
         targetA_pct = A;
         targetB_pct = B;
         
-        // 更新按鈕樣式
+        // 確保所有按鈕狀態都正確切換
         document.getElementById('btn-80-20').classList.toggle('active', A === 80);
         document.getElementById('btn-70-30').classList.toggle('active', A === 70);
         document.getElementById('btn-60-40').classList.toggle('active', A === 60);
         document.getElementById('btn-50-50').classList.toggle('active', A === 50);
 
-        // 更新結果頁的目標比例 (預先設置)
         document.getElementById('resTargetA').innerText = `${targetA_pct}%`;
         document.getElementById('resTargetB').innerText = `${targetB_pct}%`;
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始化狀態
+        // 初始化資產名稱
+        const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
+        const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
+        document.getElementById('resAssetNameA_short').innerText = assetAName;
+        document.getElementById('resAssetNameA').innerText = assetAName;
+        document.getElementById('resAssetNameB').innerText = assetBName;
+
+        // 初始化目標比例與按鈕狀態
         setTarget(80, 20); 
+        
+        // 初始化頂部顯示
+        document.getElementById('resTotalDisplay').innerText = '0.00';
+        document.getElementById('resAssetAPctDisplay').innerText = '0.00%';
+        
+        // 初始化滑桿顯示
         const initialDCA = document.getElementById('dcaAmountSlider').value;
         updateDCA(initialDCA); 
-        updateInputs(); // 載入時更新頂部顯示
-        goToStep(1); // 確保從 Step 1 開始
+
+        // 執行初始計算
+        calculate();
     });
 
-
-    // --- 主要計算與跳轉函數 ---
-    function calculateAndGoToStep2() {
+    function calculate() {
         const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
         const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
         
@@ -557,27 +526,58 @@
         
         const totalVal = assetAVal + assetBVal;
 
-        // 驗證輸入
         if (totalVal <= 0) {
-            alert("請輸入有效的資產市值 (K USD)！");
+            document.getElementById('resTotalDisplay').innerText = '0.00';
+            document.getElementById('resAssetAPctDisplay').innerText = '0.00%';
+            document.getElementById('resultPanel').style.display = "none";
+            
+            // 如果總值為 0，需要更新表格中的數值為 '-'
+            document.getElementById('resAssetAVal').innerText = '-';
+            document.getElementById('resAssetAPct').innerText = '-';
+            document.getElementById('resAssetBVal').innerText = '-';
+            document.getElementById('resAssetBPct').innerText = '-';
+            document.getElementById('resTotal').innerText = '-';
+
+            // 重置狀態盒
+            document.getElementById('statusBox').className = "status-box status-ok";
+            document.getElementById('statusBox').innerHTML = " **請輸入資產市值**";
+            document.getElementById('actionSteps').style.display = "none";
+            document.getElementById('dcaAdvice').innerHTML = "請設定每月供款金額 (K 美元) 以獲取月供分配建議。";
+            
             return;
         }
 
         const minA = targetA_pct - REBALANCE_TOLERANCE;
         const maxA = targetA_pct + REBALANCE_TOLERANCE;
+        
+        // 更新 UI 標籤與結果欄位
+        document.getElementById('resAssetNameA').innerText = assetAName;
+        document.getElementById('resAssetNameA_short').innerText = assetAName;
+        document.getElementById('resAssetNameB').innerText = assetBName;
+        // resTargetA/B 由 setTarget 更新，呢度毋須重複
+
         const assetAPct = (assetAVal / totalVal) * 100;
         const assetBPct = 100 - assetAPct;
         
-        // --- 1. 更新 Step 2 結果欄位 ---
-        document.getElementById('resAssetNameA').innerText = assetAName;
-        document.getElementById('resAssetNameB').innerText = assetBName;
+        // 輸出結果格式
         document.getElementById('resAssetAVal').innerText = `${assetAVal.toFixed(2)} K USD`;
         document.getElementById('resAssetAPct').innerText = `${assetAPct.toFixed(2)}%`;
         document.getElementById('resAssetBVal').innerText = `${assetBVal.toFixed(2)} K USD`;
         document.getElementById('resAssetBPct').innerText = `${assetBPct.toFixed(2)}%`;
         document.getElementById('resTotal').innerText = `${totalVal.toFixed(2)} K USD`;
-        
-        // --- 2. 處理狀態與建議 ---
+
+        // 更新頂部儀表盤
+        document.getElementById('resTotalDisplay').innerText = `${totalVal.toFixed(2)}`;
+        document.getElementById('resAssetAPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
+
+
+        // ********** 動畫邏輯更新 **********
+        const resultPanel = document.getElementById('resultPanel');
+        resultPanel.style.display = "none"; 
+        void resultPanel.offsetWidth; 
+        resultPanel.style.display = "block"; 
+        // **********************************
+
         const statusBox = document.getElementById('statusBox');
         const actionSteps = document.getElementById('actionSteps');
         const dcaAdvice = document.getElementById('dcaAdvice');
@@ -585,10 +585,13 @@
         let needsRebalance = false;
         let message = "";
         
-        if (assetAPct > maxA || assetAPct < minA) {
+        if (assetAPct > maxA) {
             needsRebalance = true;
-            let condition = (assetAPct > maxA) ? `過高 (${assetAPct.toFixed(2)}% > ${maxA}%)` : `不足 (${assetAPct.toFixed(2)}% < ${minA}%)`;
-            message = ` **比例警告** ${assetAName} 佔比嚴重${condition}，建議立即再平衡。`;
+            message = ` **比例警告** ${assetAName} 佔比嚴重過高 (${assetAPct.toFixed(2)}% > ${maxA}%)，建議立即再平衡。`;
+            statusBox.className = "status-box status-warn";
+        } else if (assetAPct < minA) {
+            needsRebalance = true;
+            message = ` **比例警告** ${assetAName} 佔比嚴重不足 (${assetAPct.toFixed(2)}% < ${minA}%)，建議立即再平衡。`;
             statusBox.className = "status-box status-warn";
         } else {
             message = " **比例健康** 投資組合比例在設定容忍度範圍內。";
@@ -597,15 +600,18 @@
         
         statusBox.innerHTML = `<strong>${message.trim()}</strong>`; 
 
-        // 傳統再平衡建議
+        // --- 傳統再平衡建議 ---
         if (needsRebalance) {
             actionSteps.style.display = "block";
+            
             const targetA = totalVal * (targetA_pct / 100);
             const diffA = targetA - assetAVal; 
             const diffB = -diffA; 
+            
             const buyColor = 'var(--highlight-color)'; 
             const sellColor = 'var(--status-warn-border)'; 
 
+            // 輸出結果格式：數值在前，K 美元在後
             const assetAAct = diffA > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffA).toFixed(2)} K USD</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffA).toFixed(2)} K USD</span>`;
             const assetBAct = diffB > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffB).toFixed(2)} K USD</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffB).toFixed(2)} K USD</span>`;
 
@@ -619,12 +625,15 @@
             actionSteps.style.display = "none";
         }
 
-        // 月供分配建議
+        // --- 月供分配建議 ---
         let dcaMsg = "";
+
         if (dcaAmount > 0) {
             if (needsRebalance) {
                 let underWeightAsset = (assetAPct < targetA_pct) ? assetAName : assetBName;
-                dcaAdvice.className = "dca-advice status-warn"; 
+                
+                dcaAdvice.className = "dca-advice status-warn"; // 比例偏離時用 Warn 顏色
+
                 dcaMsg = `
                     <strong>【月供建議 - 修正】</strong><br>
                     由於倉位嚴重偏離目標，建議將 **100%** (${dcaAmount.toFixed(2)} K USD) 的月供全部投入：
@@ -634,7 +643,9 @@
             } else {
                 const dcaA = dcaAmount * (targetA_pct / 100);
                 const dcaB = dcaAmount * (targetB_pct / 100);
-                dcaAdvice.className = "dca-advice status-ok"; 
+                
+                dcaAdvice.className = "dca-advice status-ok"; // 比例健康時用 OK 顏色
+
                 dcaMsg = `
                     <strong>【月供建議 - 正常】</strong><br>
                     目前嘅倉位比例健康，建議月供按目標 ${targetA_pct}/${targetB_pct} 比例分配：
@@ -646,10 +657,8 @@
             dcaAdvice.className = "dca-advice status-ok";
             dcaMsg = "請設定每月供款金額 (K 美元) 以獲取月供分配建議。";
         }
-        dcaAdvice.innerHTML = dcaMsg;
 
-        // --- 3. 跳轉到 Step 2 ---
-        goToStep(2);
+        dcaAdvice.innerHTML = dcaMsg;
     }
 </script>
 
