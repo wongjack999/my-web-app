@@ -45,6 +45,11 @@
 
             /* Slider 顏色 */
             --slider-thumb-size: 24px;
+
+            /* ✨ 鍵盤專用變數 */
+            --keypad-bg: var(--bg-color); /* 使用主背景色 */
+            --key-shadow: var(--shadow-small);
+            --key-active-shadow: var(--inner-shadow-light);
         }
 
         body {
@@ -52,11 +57,13 @@
             background-color: var(--bg-color); 
             display: flex;
             justify-content: center;
+            /* 增加底部 padding 避免內容被鍵盤遮擋 */
             min-height: 100vh;
             margin: 0;
-            padding: 40px 0;
+            padding: 40px 0 350px 0; /* ✨ 新增底部 padding */
             color: var(--text-primary);
             overflow-x: hidden;
+            position: relative; 
         }
 
         .container {
@@ -167,6 +174,9 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--highlight-color);
+            /* ✨ 新增：阻止原生鍵盤彈出並防止游標顯示 */
+            caret-color: transparent; 
+            user-select: none;
         }
         
         /* ------------------------------------- */
@@ -255,7 +265,7 @@
             padding: 15px 10px;
             border: none;
             border-radius: 20px; 
-            font-size: 0.9rem; /* <-- 確保所有按鈕都有呢個大小 */
+            font-size: 0.9rem; 
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease; 
@@ -293,7 +303,7 @@
         }
 
         /* ------------------------------------- */
-        /* 結果展示 (卡片與表格) - 圓角修正區域 */
+        /* 結果展示 (卡片與表格) */
         /* ------------------------------------- */
         .result-panel {
             margin-top: 40px;
@@ -380,6 +390,74 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ------------------------------------- */
+        /* ✨ 虛擬鍵盤樣式 (融入 Neumorphism) */
+        /* ------------------------------------- */
+        .keyboard-container {
+            position: fixed;
+            bottom: 0;
+            left: 50%; /* 確保居中 */
+            transform: translateX(-50%) translateY(100%); /* 初始隱藏，並居中 */
+            width: 100%;
+            max-width: 400px; /* 與 container 保持一致 */
+            padding: 20px 25px 30px;
+            background-color: var(--keypad-bg); 
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05); /* 柔和邊緣陰影 */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            border-top-left-radius: 30px; /* 配合 container 圓角 */
+            border-top-right-radius: 30px;
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .keyboard-container.active {
+            transform: translateX(-50%) translateY(0); /* 彈出 */
+        }
+
+        .key {
+            padding: 18px 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-primary);
+            background: var(--main-color);
+            border: none;
+            border-radius: 18px; /* 圓角比小陰影稍大 */
+            cursor: pointer;
+            box-shadow: var(--key-shadow); /* 使用 shadow-small */
+            transition: all 0.1s ease;
+            line-height: 1;
+        }
+
+        .key:active {
+            box-shadow: var(--key-active-shadow); /* 使用 inner-shadow-light */
+            transform: scale(0.95);
+        }
+
+        /* 特殊按鍵設計 */
+        .key.key-delete {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .key.key-dismiss {
+            background-color: var(--highlight-color);
+            color: var(--highlight-text);
+            grid-column: span 3;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 18px;
+            box-shadow: var(--btn-calc-shadow); /* 使用計算按鈕的強調陰影 */
+        }
+        
+        .key.key-dismiss:active {
+             box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.3), inset -3px -3px 7px var(--highlight-light);
+             transform: translateY(1px);
+        }
     </style>
 </head>
 <body>
@@ -410,7 +488,7 @@
         <label for="assetAName">核心資產名稱與市值 (K 美元)</label>
         <div class="asset-input">
             <input type="text" id="assetAName" value="QQQ" placeholder="資產代號" oninput="calculate()">
-            <input type="number" id="assetAVal" value="8.50" placeholder="市值" oninput="calculate()">
+            <input type="number" id="assetAVal" value="8.50" placeholder="市值" oninput="calculate()" inputmode="none" readonly>
         </div>
     </div>
 
@@ -418,7 +496,7 @@
         <label for="assetBName">衛星資產名稱與市值 (K 美元)</label>
         <div class="asset-input">
             <input type="text" id="assetBName" value="BND" placeholder="資產代號" oninput="calculate()">
-            <input type="number" id="assetBVal" value="1.50" placeholder="市值" oninput="calculate()">
+            <input type="number" id="assetBVal" value="1.50" placeholder="市值" oninput="calculate()" inputmode="none" readonly>
         </div>
     </div>
 
@@ -476,10 +554,29 @@
     
 </div>
 
+<div id="keypad" class="keyboard-container">
+    <button class="key" onclick="handleKey('1')">1</button>
+    <button class="key" onclick="handleKey('2')">2</button>
+    <button class="key" onclick="handleKey('3')">3</button>
+    <button class="key" onclick="handleKey('4')">4</button>
+    <button class="key" onclick="handleKey('5')">5</button>
+    <button class="key" onclick="handleKey('6')">6</button>
+    <button class="key" onclick="handleKey('7')">7</button>
+    <button class="key" onclick="handleKey('8')">8</button>
+    <button class="key" onclick="handleKey('9')">9</button>
+    <button class="key key-decimal" onclick="handleKey('.')">.</button>
+    <button class="key" onclick="handleKey('0')">0</button>
+    <button class="key key-delete" onclick="handleKey('del')">⌫</button>
+    <button class="key key-dismiss" onclick="dismissKeypad()">確認</button>
+</div>
+
 <script>
     let targetA_pct = 80;
     let targetB_pct = 20;
     const REBALANCE_TOLERANCE = 5; 
+
+    // ✨ 用於儲存當前被選中嘅數字輸入框
+    let activeInput = null; 
 
     // 滑桿數值實時更新，並觸發計算
     function updateDCA(value) {
@@ -501,28 +598,101 @@
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始化資產名稱
+        // ... [初始化代碼] ...
         const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
         const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
         document.getElementById('resAssetNameA_short').innerText = assetAName;
         document.getElementById('resAssetNameA').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
 
-        // 初始化目標比例與按鈕狀態
         setTarget(80, 20); 
         
-        // 初始化頂部顯示
         document.getElementById('resTotalDisplay').innerText = '0.00';
         document.getElementById('resAssetAPctDisplay').innerText = '0.00%';
         
-        // 初始化滑桿顯示
         const initialDCA = document.getElementById('dcaAmountSlider').value;
         updateDCA(initialDCA); 
 
+        // ✨ 設置鍵盤監聽
+        setupKeypad();
+        
         // 執行初始計算
         calculate();
     });
 
+    // ✨ 設置鍵盤事件監聽
+    function setupKeypad() {
+        // 僅監聽我們想用虛擬鍵盤輸入的 "number" 輸入框
+        const numberInputs = document.querySelectorAll('#assetAVal, #assetBVal'); 
+        const keypad = document.getElementById('keypad');
+
+        numberInputs.forEach(input => {
+            // 當數字輸入框獲得焦點時
+            input.addEventListener('focus', function(e) {
+                // 阻止原生鍵盤彈出
+                e.preventDefault(); 
+                activeInput = this;
+                keypad.classList.add('active'); // 顯示鍵盤
+            });
+             // 當輸入框失去焦點時，不自動隱藏鍵盤，由 dismissKeypad 控制
+            input.addEventListener('blur', function() {
+                // 只需要確保在 dismissKeypad() 以外的 blur 事件不會導致 activeInput 變為 null
+                // 這裡留空，確保鍵盤操作後 activeInput 仍然指向正確的輸入框。
+            });
+        });
+    }
+
+    // ✨ 處理鍵盤輸入
+    function handleKey(key) {
+        if (!activeInput) return;
+
+        let currentValue = activeInput.value.toString();
+        
+        if (key === 'del') {
+            // 刪除最後一個字符
+            activeInput.value = currentValue.slice(0, -1);
+        } else if (key === '.') {
+            // 處理小數點，只允許一個小數點
+            if (!currentValue.includes('.')) {
+                // 如果當前冇數值，輸入小數點前加 '0'
+                if (currentValue === '') {
+                    activeInput.value = '0.';
+                } else {
+                    activeInput.value = currentValue + key;
+                }
+            }
+        } else {
+            // 處理數字 0-9
+            // 處理 leading zero，如果當前是 '0'，則用新數字替換
+            if (currentValue === '0') {
+                activeInput.value = key;
+            } else {
+                 activeInput.value = currentValue + key;
+            }
+        }
+
+        // 輸入後，手動保持焦點，防止鍵盤收起
+        activeInput.focus();
+        
+        // 重新觸發計算
+        calculate(); 
+    }
+
+    // ✨ 處理收回鍵盤
+    function dismissKeypad() {
+        const keypad = document.getElementById('keypad');
+        keypad.classList.remove('active'); // 隱藏鍵盤
+        
+        // 清除焦點，讓瀏覽器認為輸入結束
+        if (activeInput) {
+            activeInput.blur();
+        }
+        activeInput = null; // 清除活動輸入框
+        
+        calculate(); // 再次執行計算，確保收回時數據已更新
+    }
+
+    // --- 原始 calculate 函數保持不變 ---
     function calculate() {
         const assetAName = document.getElementById('assetAName').value.toUpperCase().trim() || 'Asset A';
         const assetBName = document.getElementById('assetBName').value.toUpperCase().trim() || 'Asset B';
@@ -538,14 +708,12 @@
             document.getElementById('resAssetAPctDisplay').innerText = '0.00%';
             document.getElementById('resultPanel').style.display = "none";
             
-            // 如果總值為 0，需要更新表格中的數值為 '-'
             document.getElementById('resAssetAVal').innerText = '-';
             document.getElementById('resAssetAPct').innerText = '-';
             document.getElementById('resAssetBVal').innerText = '-';
             document.getElementById('resAssetBPct').innerText = '-';
             document.getElementById('resTotal').innerText = '-';
 
-            // 重置狀態盒
             document.getElementById('statusBox').className = "status-box status-ok";
             document.getElementById('statusBox').innerHTML = " **請輸入資產市值**";
             document.getElementById('actionSteps').style.display = "none";
@@ -557,33 +725,26 @@
         const minA = targetA_pct - REBALANCE_TOLERANCE;
         const maxA = targetA_pct + REBALANCE_TOLERANCE;
         
-        // 更新 UI 標籤與結果欄位
         document.getElementById('resAssetNameA').innerText = assetAName;
         document.getElementById('resAssetNameA_short').innerText = assetAName;
         document.getElementById('resAssetNameB').innerText = assetBName;
-        // resTargetA/B 由 setTarget 更新，呢度毋須重複
 
         const assetAPct = (assetAVal / totalVal) * 100;
         const assetBPct = 100 - assetAPct;
         
-        // 輸出結果格式
         document.getElementById('resAssetAVal').innerText = `${assetAVal.toFixed(2)} K USD`;
         document.getElementById('resAssetAPct').innerText = `${assetAPct.toFixed(2)}%`;
         document.getElementById('resAssetBVal').innerText = `${assetBVal.toFixed(2)} K USD`;
         document.getElementById('resAssetBPct').innerText = `${assetBPct.toFixed(2)}%`;
         document.getElementById('resTotal').innerText = `${totalVal.toFixed(2)} K USD`;
 
-        // 更新頂部儀表盤
         document.getElementById('resTotalDisplay').innerText = `${totalVal.toFixed(2)}`;
         document.getElementById('resAssetAPctDisplay').innerText = `${assetAPct.toFixed(2)}%`;
 
-
-        // ********** 動畫邏輯更新 **********
         const resultPanel = document.getElementById('resultPanel');
         resultPanel.style.display = "none"; 
         void resultPanel.offsetWidth; 
         resultPanel.style.display = "block"; 
-        // **********************************
 
         const statusBox = document.getElementById('statusBox');
         const actionSteps = document.getElementById('actionSteps');
@@ -607,7 +768,6 @@
         
         statusBox.innerHTML = `<strong>${message.trim()}</strong>`; 
 
-        // --- 傳統再平衡建議 ---
         if (needsRebalance) {
             actionSteps.style.display = "block";
             
@@ -618,7 +778,6 @@
             const buyColor = 'var(--highlight-color)'; 
             const sellColor = 'var(--status-warn-border)'; 
 
-            // 輸出結果格式：數值在前，K 美元在後
             const assetAAct = diffA > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffA).toFixed(2)} K USD</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffA).toFixed(2)} K USD</span>`;
             const assetBAct = diffB > 0 ? `<span style="color:${buyColor}; font-weight: 700;">買入 ${Math.abs(diffB).toFixed(2)} K USD</span>` : `<span style="color:${sellColor}; font-weight: 700;">賣出 ${Math.abs(diffB).toFixed(2)} K USD</span>`;
 
@@ -632,14 +791,13 @@
             actionSteps.style.display = "none";
         }
 
-        // --- 月供分配建議 ---
         let dcaMsg = "";
 
         if (dcaAmount > 0) {
             if (needsRebalance) {
                 let underWeightAsset = (assetAPct < targetA_pct) ? assetAName : assetBName;
                 
-                dcaAdvice.className = "dca-advice status-warn"; // 比例偏離時用 Warn 顏色
+                dcaAdvice.className = "dca-advice status-warn"; 
 
                 dcaMsg = `
                     <strong>【月供建議 - 修正】</strong><br>
@@ -651,7 +809,7 @@
                 const dcaA = dcaAmount * (targetA_pct / 100);
                 const dcaB = dcaAmount * (targetB_pct / 100);
                 
-                dcaAdvice.className = "dca-advice status-ok"; // 比例健康時用 OK 顏色
+                dcaAdvice.className = "dca-advice status-ok"; 
 
                 dcaMsg = `
                     <strong>【月供建議 - 正常】</strong><br>
@@ -671,6 +829,3 @@
 
 </body>
 </html>
-
-
-
